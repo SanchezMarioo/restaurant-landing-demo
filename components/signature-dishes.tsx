@@ -60,22 +60,15 @@ export default function SignatureDishes() {
   const [hoveredDish, setHoveredDish] = useState<number | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
 
-  // Posiciones predefinidas para las partículas
+  // Posiciones predefinidas para las partículas (reducidas para mejor rendimiento)
   const particlePositions = [
     { left: 38.08, top: 5.25 },
     { left: 43.48, top: 58.94 },
-    { left: 23.78, top: 92.35 },
     { left: 71.59, top: 45.52 },
     { left: 83.20, top: 71.99 },
-    { left: 76.80, top: 41.02 },
-    { left: 41.57, top: 43.02 },
-    { left: 53.02, top: 67.29 },
     { left: 66.62, top: 23.64 },
     { left: 16.28, top: 1.55 },
-    { left: 31.24, top: 78.63 },
     { left: 94.14, top: 47.66 },
-    { left: 40.71, top: 51.76 },
-    { left: 4.74, top: 98.90 },
     { left: 8.64, top: 61.53 },
   ]
 

@@ -10,20 +10,14 @@ export default function HeroSection() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
-  // Posiciones predefinidas para evitar hydration mismatch
+  // Posiciones predefinidas para evitar hydration mismatch (reducidas para mejor rendimiento)
   const particlePositions = [
     { left: 84.76, top: 76.60 },
     { left: 21.07, top: 47.18 },
     { left: 39.65, top: 87.98 },
     { left: 44.17, top: 52.26 },
-    { left: 44.13, top: 52.86 },
     { left: 47.22, top: 1.50 },
-    { left: 37.59, top: 44.74 },
     { left: 54.80, top: 96.54 },
-    { left: 22.82, top: 60.19 },
-    { left: 92.83, top: 13.37 },
-    { left: 86.26, top: 18.56 },
-    { left: 49.80, top: 16.23 },
   ]
 
   useEffect(() => {

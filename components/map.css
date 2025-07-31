@@ -1,0 +1,29 @@
+/* CSS optimizado para Leaflet - solo se carga cuando es necesario */
+@import 'leaflet/dist/leaflet.css';
+
+.leaflet-container {
+  font-family: inherit;
+}
+
+.leaflet-tile-pane {
+  filter: none;
+  transform: translateZ(0);
+}
+
+.leaflet-tile {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+  will-change: transform;
+}
+
+.custom-popup .leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.custom-popup .leaflet-popup-tip {
+  background: white;
+}
