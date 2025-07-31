@@ -4,21 +4,26 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { Sparkles } from "lucide-react"
-import Link from "next/link"
+import { ChefHat } from "lucide-react"
 
 export default function HeroSection() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
-  // Valores fijos para evitar hydration mismatch
-  const floatingElements = [
-    { width: 85, height: 72, left: 15, top: 25, duration: 20 },
-    { width: 62, height: 55, left: 75, top: 15, duration: 25 },
-    { width: 78, height: 68, left: 45, top: 65, duration: 18 },
-    { width: 55, height: 62, left: 85, top: 45, duration: 22 },
-    { width: 70, height: 58, left: 25, top: 80, duration: 27 },
-    { width: 90, height: 75, left: 65, top: 35, duration: 19 },
+  // Posiciones predefinidas para evitar hydration mismatch
+  const particlePositions = [
+    { left: 84.76, top: 76.60 },
+    { left: 21.07, top: 47.18 },
+    { left: 39.65, top: 87.98 },
+    { left: 44.17, top: 52.26 },
+    { left: 44.13, top: 52.86 },
+    { left: 47.22, top: 1.50 },
+    { left: 37.59, top: 44.74 },
+    { left: 54.80, top: 96.54 },
+    { left: 22.82, top: 60.19 },
+    { left: 92.83, top: 13.37 },
+    { left: 86.26, top: 18.56 },
+    { left: 49.80, top: 16.23 },
   ]
 
   useEffect(() => {
@@ -46,48 +51,48 @@ export default function HeroSection() {
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center pt-20 pb-16 overflow-hidden">
-      {/* Elegant background */}
+      {/* Innovative culinary background */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3"
-          alt="Restaurant ambiance"
+          src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3"
+          alt="Modern culinary innovation"
           fill
           priority
-          className="object-cover opacity-30"
+          className="object-cover opacity-40"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-black/40 to-black"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-black/90 to-black"></div>
       </div>
 
-      {/* Subtle interactive light effect */}
+      {/* Interactive light effect */}
       <motion.div
-        className="absolute inset-0 pointer-events-none opacity-50"
+        className="absolute inset-0 pointer-events-none opacity-30"
         style={{
           background: `radial-gradient(400px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(16, 185, 129, 0.1), transparent 40%)`,
         }}
       />
 
-      {/* Elegant floating elements */}
+      {/* Floating molecular elements */}
       <div className="absolute inset-0 overflow-hidden">
-        {floatingElements.map((element, i) => (
+        {particlePositions.map((position, i) => (
           <motion.div
             key={i}
-            className="absolute border border-white/10 rounded-lg"
+            className="absolute w-2 h-2 bg-emerald-400/20 rounded-full"
             style={{
-              width: element.width,
-              height: element.height,
-              left: `${element.left}%`,
-              top: `${element.top}%`,
+              left: `${position.left}%`,
+              top: `${position.top}%`,
             }}
-            animate={{
-              rotate: [0, 360],
-              scale: [1, 1.1, 1],
-              opacity: [0.1, 0.3, 0.1],
-            }}
+            animate={isLoaded ? {
+              scale: [0.5, 1.5, 0.5],
+              opacity: [0.2, 0.8, 0.2],
+              x: [0, (i % 2 === 0 ? 30 : -30)],
+              y: [0, (i % 3 === 0 ? 20 : -20)],
+            } : {}}
             transition={{
-              duration: element.duration,
+              duration: 6 + (i % 4),
               repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
+              ease: "easeInOut",
+              delay: i * 0.2,
             }}
           />
         ))}
@@ -100,24 +105,16 @@ export default function HeroSection() {
             animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            {/* Elegant badge */}
+            {/* Innovation badge */}
             <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/5 backdrop-blur-xl border border-white/20 mb-8">
-              <Sparkles className="w-5 h-5 mr-2 text-emerald-400" />
-              <span className="text-emerald-300 font-medium">EXPERIENCIA GASTRONÓMICA ÚNICA</span>
+              <ChefHat className="w-5 h-5 mr-2 text-emerald-400" />
+              <span className="text-emerald-300 font-medium">ALTA GASTRONOMÍA</span>
             </div>
 
             <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl font-light mb-8 tracking-tight">
               <span className="block text-white/90">LUMIÈRE</span>
               <span className="block font-medium bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600 relative">
                 RESTAURANT
-                {/* Subtle glow effect */}
-                <motion.div
-                  className="absolute inset-0 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600 blur-sm opacity-50"
-                  animate={{ opacity: [0.3, 0.7, 0.3] }}
-                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
-                >
-                  RESTAURANT
-                </motion.div>
               </span>
             </h1>
           </motion.div>
@@ -127,10 +124,14 @@ export default function HeroSection() {
             animate={{ opacity: isLoaded ? 1 : 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <p className="text-xl md:text-2xl text-zinc-300 max-w-4xl mx-auto mb-12 leading-relaxed">
-              Donde la <span className="text-emerald-400 font-medium">tradición culinaria</span> se encuentra con la
-              <span className="text-teal-400 font-medium"> innovación moderna</span> para crear experiencias
-              gastronómicas que trascienden lo ordinario.
+            <p className="text-xl md:text-2xl text-zinc-300 max-w-4xl mx-auto mb-4 leading-relaxed">
+              <span className="text-emerald-400 font-medium">
+                Donde la tradición culinaria se encuentra con la elegancia moderna
+              </span>
+            </p>
+            <p className="text-lg text-zinc-400 max-w-3xl mx-auto mb-12">
+              Una experiencia gastronómica refinada con ingredientes de primera calidad y técnicas culinarias
+              tradicionales.
             </p>
           </motion.div>
 
@@ -142,20 +143,29 @@ export default function HeroSection() {
           >
             <Button
               className="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white px-10 py-6 text-lg rounded-full shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300"
-              onClick={scrollToReservation}
+              onClick={() => {
+                const menuSection = document.getElementById("menu")
+                if (menuSection) {
+                  window.scrollTo({
+                    top: menuSection.offsetTop - 80,
+                    behavior: "smooth",
+                  })
+                }
+              }}
             >
-              Reservar Mesa
+              Ver Nuestra Carta
             </Button>
 
-            <Link
-              href="/menu"
+            <Button
+              variant="outline"
               className="border-2 border-white/20 text-white hover:bg-white/10 hover:border-emerald-400/50 px-10 py-6 text-lg rounded-full backdrop-blur-xl transition-all duration-300 bg-transparent"
+              onClick={scrollToReservation}
             >
-              Explorar Menú
-            </Link>
+              Reservar Experiencia
+            </Button>
           </motion.div>
 
-          {/* Elegant scroll indicator */}
+          {/* Scroll indicator */}
           <motion.div
             className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
             initial={{ opacity: 0, y: -10 }}
@@ -169,7 +179,7 @@ export default function HeroSection() {
             }}
           >
             <div className="flex flex-col items-center">
-              <span className="text-emerald-400 text-sm mb-3 font-medium">DESCUBRE MÁS</span>
+              <span className="text-emerald-400 text-sm mb-3 font-medium">DESCUBRE LA EXCELENCIA</span>
               <div className="w-px h-12 bg-gradient-to-b from-emerald-500 via-teal-500 to-transparent relative">
                 <motion.div
                   className="absolute top-0 left-0 w-px h-4 bg-gradient-to-b from-emerald-400 to-teal-400"

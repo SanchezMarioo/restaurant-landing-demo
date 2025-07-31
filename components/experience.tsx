@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import Image from "next/image"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { Utensils, Wine, Users, Award } from "lucide-react"
@@ -28,7 +28,7 @@ const experienceFeatures = [
     icon: <Award className="w-6 h-6" />,
     title: "Experiencia Premium",
     description: "Un viaje gastronómico donde cada detalle está cuidadosamente diseñado.",
-    color: "from-violet-400 to-purple-500",
+    color: "from-purple-400 to-violet-500",
   },
 ]
 
@@ -39,18 +39,23 @@ export default function Experience() {
     offset: ["start end", "end start"],
   })
 
-  const y1 = useTransform(scrollYProgress, [0, 1], [50, -50])
-  const y2 = useTransform(scrollYProgress, [0, 1], [-30, 30])
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.6, 1, 1, 0.6])
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, -50])
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, 50])
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.6, 1], [0.6, 1, 1, 0.6])
+  const [isLoaded, setIsLoaded] = useState(false)
 
-  // Valores fijos para evitar hydration mismatch
-  const floatingDots = [
-    { left: 73, top: 24, moveX: -25, moveY: 30, duration: 8, delay: 0 },
-    { left: 75, top: 43, moveX: 20, moveY: -15, duration: 6.5, delay: 0.8 },
-    { left: 79, top: 99, moveX: -10, moveY: 25, duration: 7.2, delay: 1.5 },
-    { left: 97, top: 48, moveX: -40, moveY: -20, duration: 5.8, delay: 0.3 },
-    { left: 84, top: 34, moveX: 15, moveY: 35, duration: 6.8, delay: 1.2 },
+  // Posiciones predefinidas para evitar hydration mismatch
+  const particlePositions = [
+    { left: 96.87, top: 28.63 },
+    { left: 74.49, top: 10.47 },
+    { left: 76.37, top: 96.76 },
+    { left: 37.93, top: 42.22 },
+    { left: 78.32, top: 12.51 },
   ]
+
+  useEffect(() => {
+    setIsLoaded(true)
+  }, [])
 
   return (
     <section id="experience-detail" className="py-32 px-4 md:px-6 relative overflow-hidden" ref={ref}>
@@ -59,24 +64,24 @@ export default function Experience() {
 
       {/* Subtle animated elements */}
       <div className="absolute inset-0 overflow-hidden">
-        {floatingDots.map((dot, i) => (
+        {particlePositions.map((position, i) => (
           <motion.div
             key={i}
             className="absolute w-2 h-2 bg-emerald-400/20 rounded-full"
-            animate={{
-              x: [0, dot.moveX],
-              y: [0, dot.moveY],
+            animate={isLoaded ? {
+              x: [0, (i % 2 === 0 ? 30 : -30)],
+              y: [0, (i % 3 === 0 ? 20 : -20)],
               opacity: [0.2, 0.5, 0.2],
               scale: [0.5, 1, 0.5],
-            }}
+            } : {}}
             transition={{
-              duration: dot.duration,
+              duration: 4 + (i % 3),
               repeat: Number.POSITIVE_INFINITY,
-              delay: dot.delay,
+              delay: i * 0.4,
             }}
             style={{
-              left: `${dot.left}%`,
-              top: `${dot.top}%`,
+              left: `${position.left}%`,
+              top: `${position.top}%`,
             }}
           />
         ))}
@@ -171,7 +176,9 @@ export default function Experience() {
                   </div>
 
                   {/* Subtle hover glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300 -z-10`}
+                  ></div>
                 </motion.div>
               ))}
             </div>

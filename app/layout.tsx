@@ -1,8 +1,6 @@
-
 import type React from "react"
 import "./globals.css"
 import { Playfair_Display, Inter } from "next/font/google"
-import { ThemeProvider } from "@/components/theme-provider"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -17,6 +15,7 @@ const inter = Inter({
 export const metadata = {
   title: "Lumière - Experiencia Gastronómica",
   description: "Descubre una experiencia culinaria sublime en Lumière Restaurant",
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -25,10 +24,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <html lang="es" className={`${playfair.variable} ${inter.variable}`}>
-        <body className="font-sans">{children}</body>
-      </html>
-    </ThemeProvider>
+    <html lang="es" className={`${playfair.variable} ${inter.variable}`}>
+      <body className="font-sans">{children}</body>
+    </html>
   )
 }
