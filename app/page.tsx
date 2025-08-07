@@ -10,6 +10,7 @@ import Footer from "@/components/footer"
 import PersistentCTA from "@/components/persistent-cta"
 import CustomCursor from "@/components/custom-cursor"
 import ContactSection from "@/components/contact-section"
+import { FeaturedCarousel } from "@/components/slider-featured"
 
 export default function Home() {
   return (

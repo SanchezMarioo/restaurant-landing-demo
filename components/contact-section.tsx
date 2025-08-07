@@ -6,11 +6,14 @@ import { MapPin, Phone, Mail, Clock, Car, Utensils } from "lucide-react"
 import dynamic from "next/dynamic"
 
 // Importar el mapa de forma dinámica para evitar problemas de SSR
-const Map = dynamic(() => import("./map"), {
+const SimpleLeafletMap = dynamic(() => import('./simple-leaflet-map'), {
   ssr: false,
   loading: () => (
-    <div className="h-full w-full bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-2xl flex items-center justify-center">
-      <div className="text-white/60">Cargando mapa...</div>
+    <div className="h-full w-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center rounded-2xl">
+      <div className="text-center text-white">
+        <div className="text-2xl mb-2">🗺️</div>
+        <p>Cargando mapa...</p>
+      </div>
     </div>
   ),
 })
@@ -163,11 +166,8 @@ export default function ContactSection() {
             className="relative"
           >
             {/* Map placeholder */}
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center">
-                <Map />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+            <div className="relative h-96 w-full rounded-2xl overflow-hidden mb-6">
+              <SimpleLeafletMap />
             </div>
 
             {/* Location details */}

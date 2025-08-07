@@ -10,9 +10,9 @@ interface UseInViewOptions {
 
 export function useInView<T extends HTMLElement = HTMLDivElement>(
   options: UseInViewOptions = {},
-): [RefObject<T>, boolean] {
+): [RefObject<T | null>, boolean] {
   const { threshold = 0.1, rootMargin = "0px", once = true } = options
-  const ref = useRef<T>(null)
+  const ref = useRef<T | null>(null)
   const [isInView, setIsInView] = useState(false)
 
   useEffect(() => {
@@ -42,5 +42,5 @@ export function useInView<T extends HTMLElement = HTMLDivElement>(
     }
   }, [threshold, rootMargin, once, isInView])
 
-  return [ref, isInView]
+  return [ref, isInView] as const
 }

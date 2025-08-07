@@ -1,11 +1,13 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import Image from "next/image"
-import { motion, useScroll, useTransform } from "framer-motion"
-import { Star, ArrowRight, Sparkles } from "lucide-react"
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
+import { Star, ArrowRight, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
+import DishCard from "./signature-dishes-card" // Import the new component
 
 const signatureDishes = [
   {
@@ -20,6 +22,7 @@ const signatureDishes = [
       "https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
     rating: 4.9,
     featured: true,
+    category: "Especialidad de la Casa",
   },
   {
     id: 2,
@@ -33,6 +36,7 @@ const signatureDishes = [
       "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3",
     rating: 4.8,
     featured: true,
+    category: "Pescado Fresco",
   },
   {
     id: 3,
@@ -46,6 +50,43 @@ const signatureDishes = [
       "https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3",
     rating: 4.9,
     featured: true,
+    category: "Postre Clásico",
+  },
+  {
+    id: 4,
+    name: "Ceviche de Pulpo",
+    subtitle: "Delicia Marina",
+    description: "Fresco pulpo marinado en leche de tigre con boniato y maíz chulpi",
+    technique: "Cocina peruana",
+    price: "26€",
+    image: "https://images.unsplash.com/photo-1535399831218-d5bd36d1a6b3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
+    rating: 4.7,
+    featured: false,
+    category: "Entrante",
+  },
+  {
+    id: 5,
+    name: "Pato Confitado",
+    subtitle: "Clásico Francés",
+    description: "Muslo de pato confitado lentamente, crujiente por fuera y tierno por dentro, con puré de patata trufado",
+    technique: "Cocción lenta tradicional",
+    price: "35€",
+    image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3",
+    rating: 4.9,
+    featured: false,
+    category: "Principal",
+  },
+  {
+    id: 6,
+    name: "Soufflé de Grand Marnier",
+    subtitle: "Ligereza y Sabor",
+    description: "Soufflé aireado con licor Grand Marnier, servido con salsa de naranja",
+    technique: "Repostería clásica",
+    price: "15€",
+    image: "https://images.unsplash.com/photo-1551024506-0bccd828d307?q=80&w=1914&auto=format&fit=crop&ixlib=rb-4.0.3",
+    rating: 4.8,
+    featured: false,
+    category: "Postre",
   },
 ]
 
@@ -57,24 +98,69 @@ export default function SignatureDishes() {
   })
 
   const y = useTransform(scrollYProgress, [0, 1], [50, -50])
-  const [hoveredDish, setHoveredDish] = useState<number | null>(null)
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [direction, setDirection] = useState(0) // 0: initial, 1: next, -1: prev
+  const [particles, setParticles] = useState<Array<{ left: number; top: number; delay: number; duration: number }>>([])
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Posiciones predefinidas para las partículas (reducidas para mejor rendimiento)
-  const particlePositions = [
-    { left: 38.08, top: 5.25 },
-    { left: 43.48, top: 58.94 },
-    { left: 71.59, top: 45.52 },
-    { left: 83.20, top: 71.99 },
-    { left: 66.62, top: 23.64 },
-    { left: 16.28, top: 1.55 },
-    { left: 94.14, top: 47.66 },
-    { left: 8.64, top: 61.53 },
-  ]
+  const itemsPerPage = 3
+  const totalPages = Math.ceil(signatureDishes.length / itemsPerPage)
 
+  const nextSlide = useCallback(() => {
+    setDirection(1)
+    setCurrentPage((prev) => (prev + 1) % totalPages)
+  }, [totalPages])
+
+  const prevSlide = useCallback(() => {
+    setDirection(-1)
+    setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages)
+  }, [totalPages])
+
+  // Auto-advance slider
   useEffect(() => {
-    setIsLoaded(true)
+    timeoutRef.current = setTimeout(() => {
+      nextSlide()
+    }, 5000) // Cambia de slide cada 5 segundos
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [currentPage, nextSlide])
+
+  // Generate particles only on client side to avoid hydration mismatch
+  useEffect(() => {
+    const generateParticles = () => {
+      const newParticles = [...Array(15)].map(() => ({
+        left: Math.random() * 100,
+        top: Math.random() * 100,
+        delay: Math.random() * 2,
+        duration: Math.random() * 6 + 4,
+      }))
+      setParticles(newParticles)
+    }
+
+    generateParticles()
   }, [])
+
+  const startIndex = currentPage * itemsPerPage
+  const currentDishes = signatureDishes.slice(startIndex, startIndex + itemsPerPage)
+
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+    }),
+  }
 
   return (
     <section id="signature-menu" className="py-32 px-4 md:px-8 relative overflow-hidden" ref={ref}>
@@ -83,24 +169,24 @@ export default function SignatureDishes() {
 
       {/* Floating particles */}
       <div className="absolute inset-0 overflow-hidden">
-        {particlePositions.map((position, i) => (
+        {particles.map((particle, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 bg-emerald-400/30 rounded-full"
             style={{
-              left: `${position.left}%`,
-              top: `${position.top}%`,
+              left: `${particle.left}%`,
+              top: `${particle.top}%`,
             }}
-            animate={isLoaded ? {
+            animate={{
               scale: [0.5, 1.2, 0.5],
               opacity: [0.3, 0.8, 0.3],
               y: [0, -30, 0],
-            } : {}}
+            }}
             transition={{
-              duration: 4 + (i % 3),
+              duration: particle.duration,
               repeat: Number.POSITIVE_INFINITY,
               ease: "easeInOut",
-              delay: i * 0.1,
+              delay: particle.delay,
             }}
           />
         ))}
@@ -129,83 +215,72 @@ export default function SignatureDishes() {
           </p>
         </motion.div>
 
-        {/* Signature Dishes Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-          {signatureDishes.map((dish, index) => (
-            <motion.div
-              key={dish.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              viewport={{ once: true }}
-              className="group relative"
-              onHoverStart={() => setHoveredDish(dish.id)}
-              onHoverEnd={() => setHoveredDish(null)}
+        {/* Signature Dishes Slider */}
+        <div className="relative mb-16">
+        {/* Navigation Controls */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center space-x-4 mb-8">
+            <button
+              onClick={() => {
+                if (timeoutRef.current) clearTimeout(timeoutRef.current)
+                prevSlide()
+              }}
+              className="bg-white/5 hover:bg-white/10 text-white p-3 rounded-full border border-white/10 hover:border-emerald-500/30 transition-all duration-300"
+              aria-label="Previous slide"
             >
-              <div className="bg-zinc-900/50 backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden hover:border-emerald-500/30 transition-all duration-500">
-                {/* Image */}
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <Image
-                    src={dish.image || "/placeholder.svg"}
-                    alt={dish.name}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                    sizes="(max-width: 1024px) 100vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-
-                  {/* Floating price */}
-                  <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-full">
-                    <span className="text-emerald-400 font-medium">{dish.price}</span>
-                  </div>
-
-                  {/* Featured badge */}
-                  {dish.featured && (
-                    <div className="absolute top-4 left-4 bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                      Signature
-                    </div>
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            
+            <div className="flex space-x-2">
+              {[...Array(totalPages)].map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+                    setDirection(index > currentPage ? 1 : -1)
+                    setCurrentPage(index)
+                  }}
+                  className={cn(
+                    "w-2 h-2 rounded-full transition-all duration-300",
+                    index === currentPage ? "bg-emerald-500 w-6" : "bg-white/30 hover:bg-white/50",
                   )}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
 
-                  {/* Technique overlay */}
-                  <motion.div
-                    className="absolute bottom-4 left-4 right-4"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: hoveredDish === dish.id ? 1 : 0, y: hoveredDish === dish.id ? 0 : 10 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="bg-emerald-600/90 backdrop-blur-sm px-3 py-2 rounded-lg">
-                      <p className="text-white text-xs font-medium">{dish.technique}</p>
-                    </div>
-                  </motion.div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-emerald-400 text-sm font-medium">{dish.subtitle}</span>
-                    <div className="flex items-center">
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      <span className="ml-1 text-sm font-medium">{dish.rating}</span>
-                    </div>
-                  </div>
-
-                  <h3 className="text-2xl font-serif font-bold text-white mb-3">{dish.name}</h3>
-                  <p className="text-zinc-400 text-sm leading-relaxed">{dish.description}</p>
-                </div>
-              </div>
-
-              {/* Glow effect on hover */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-3xl -z-10"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{
-                  opacity: hoveredDish === dish.id ? 1 : 0,
-                  scale: hoveredDish === dish.id ? 1.05 : 0.8,
-                }}
-                transition={{ duration: 0.3 }}
-              />
+            <button
+              onClick={() => {
+                if (timeoutRef.current) clearTimeout(timeoutRef.current)
+                nextSlide()
+              }}
+              className="bg-white/5 hover:bg-white/10 text-white p-3 rounded-full border border-white/10 hover:border-emerald-500/30 transition-all duration-300"
+              aria-label="Next slide"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+          <AnimatePresence initial={false} custom={direction}>
+            <motion.div
+              key={currentPage}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+              className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+            >
+              {currentDishes.map((dish, index) => (
+                <DishCard key={dish.id} dish={dish} index={index} />
+              ))}
             </motion.div>
-          ))}
+          </AnimatePresence>
+
         </div>
 
         {/* CTA */}
@@ -227,3 +302,4 @@ export default function SignatureDishes() {
     </section>
   )
 }
+
