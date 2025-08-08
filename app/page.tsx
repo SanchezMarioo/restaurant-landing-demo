@@ -38,30 +38,30 @@ const SignatureDishes = dynamic(() => import("@/components/signature-dishes-work
   )
 })
 
-// Lazy load below-the-fold sections
+// Lazy load below-the-fold sections with more aggressive loading
 const ValuesSection = dynamic(() => import("@/components/values-section"), { 
   ssr: false,
-  loading: () => <div className="h-72 bg-zinc-900/20 animate-pulse" />
+  loading: () => <div className="h-72 bg-zinc-900/10" />
 })
 const Experience = dynamic(() => import("@/components/experience"), { 
   ssr: false,
-  loading: () => <div className="h-96 bg-zinc-900/20 animate-pulse" />
+  loading: () => <div className="h-96 bg-zinc-900/10" />
 })
 const ChefSection = dynamic(() => import("@/components/chef-section"), { 
   ssr: false,
-  loading: () => <div className="h-80 bg-zinc-900/20 animate-pulse" />
+  loading: () => <div className="h-80 bg-zinc-900/10" />
 })
 const Testimonials = dynamic(() => import("@/components/testimonials"), { 
   ssr: false,
-  loading: () => <div className="h-64 bg-zinc-900/20 animate-pulse" />
+  loading: () => <div className="h-64 bg-zinc-900/10" />
 })
 const ContactSection = dynamic(() => import("@/components/contact-section"), { 
   ssr: false,
-  loading: () => <div className="h-96 bg-zinc-900/20 animate-pulse" />
+  loading: () => <div className="h-96 bg-zinc-900/10" />
 })
 const Footer = dynamic(() => import("@/components/footer"), {
   ssr: false,
-  loading: () => <div className="h-40 bg-zinc-900/20" />
+  loading: () => <div className="h-40 bg-zinc-900/10" />
 })
 
 export default function Home() {

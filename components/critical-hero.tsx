@@ -47,8 +47,15 @@ export default function CriticalHero() {
                 Tradición culinaria y elegancia moderna
               </span>
             </p>
-            <p className="text-lg text-zinc-400 max-w-3xl mx-auto mb-12 will-change-auto">
-              Experiencia gastronómica refinada con ingredientes premium y técnicas tradicionales.
+            <p 
+              className="text-lg text-zinc-400 max-w-3xl mx-auto mb-12"
+              style={{
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                lineHeight: '1.6',
+                contain: 'layout style'
+              }}
+            >
+              Experiencia gastronómica refinada con ingredientes premium.
             </p>
           </div>
 

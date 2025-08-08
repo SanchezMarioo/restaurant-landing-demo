@@ -8,8 +8,10 @@ const nextConfig = {
   },
   // Performance optimizations
   compiler: {
-    // Remove console.log in production
     removeConsole: process.env.NODE_ENV === 'production',
+  },
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
   // Enable gzip compression
   compress: true,
