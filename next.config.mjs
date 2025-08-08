@@ -11,10 +11,6 @@ const nextConfig = {
     // Remove console.log in production
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  experimental: {
-    // Optimize loading
-    optimizeCss: true,
-  },
   // Enable gzip compression
   compress: true,
   images: {
