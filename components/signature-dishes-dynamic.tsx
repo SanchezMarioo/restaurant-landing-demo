@@ -10,14 +10,10 @@ import DishCard from "./signature-dishes-card"
 import type { Dish } from "@/lib/api"
 
 export default function SignatureDishesDynamic() {
-  const [isClient, setIsClient] = useState(false)
-  
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isManualNavigation, setIsManualNavigation] = useState(false)
-  const [particles, setParticles] = useState<Array<{ left: number; top: number; delay: number; duration: number }>>([])
-  const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
   const [dishes, setDishes] = useState<Dish[]>([])
   const [loading, setLoading] = useState(true)
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isManualNavigation, setIsManualNavigation] = useState(false)
 
   // Responsive items per page
   const [itemsPerPage, setItemsPerPage] = useState(3)
@@ -126,6 +122,10 @@ export default function SignatureDishesDynamic() {
         ])
       } finally {
         setLoading(false)
+        // Pequeño delay para asegurar una transición suave
+        setTimeout(() => {
+          setIsReady(true)
+        }, 300)
       }
     }
 
@@ -156,16 +156,6 @@ export default function SignatureDishesDynamic() {
     if (index >= 0 && index < totalPages) {
       setCurrentIndex(index)
       setIsManualNavigation(true)
-      
-      // Clear existing timeout
-      if (autoPlayRef.current) {
-        clearTimeout(autoPlayRef.current)
-      }
-      
-      // Resume auto-play after 8 seconds
-      autoPlayRef.current = setTimeout(() => {
-        setIsManualNavigation(false)
-      }, 8000)
     }
   }, [totalPages])
 
@@ -177,22 +167,30 @@ export default function SignatureDishesDynamic() {
     goToSlide((currentIndex - 1 + totalPages) % totalPages)
   }, [currentIndex, totalPages, goToSlide])
 
-  // Auto-advance slider (only when not manually navigating)
+  // Auto-advance slider - versión optimizada
   useEffect(() => {
-    if (!isClient || totalPages <= 1) return
+    // Solo activar si estamos en el cliente, tenemos datos y más de una página
+    if (!isClient || dishes.length === 0 || totalPages <= 1 || isManualNavigation) {
+      return
+    }
     
-    if (!isManualNavigation && totalPages > 1) {
-      autoPlayRef.current = setTimeout(() => {
-        setCurrentIndex(prev => (prev + 1) % totalPages)
-      }, 6000)
-    }
+    const timer = setTimeout(() => {
+      setCurrentIndex(prev => (prev + 1) % totalPages)
+    }, 6000)
 
-    return () => {
-      if (autoPlayRef.current) {
-        clearTimeout(autoPlayRef.current)
-      }
-    }
-  }, [currentIndex, isManualNavigation, totalPages, isClient])
+    return () => clearTimeout(timer)
+  }, [currentIndex, isManualNavigation, totalPages, isClient, dishes.length])
+
+  // Resetear navegación manual después de un tiempo
+  useEffect(() => {
+    if (!isManualNavigation) return
+    
+    const resetTimer = setTimeout(() => {
+      setIsManualNavigation(false)
+    }, 8000)
+    
+    return () => clearTimeout(resetTimer)
+  }, [isManualNavigation])
 
   // Generate particles only on client side
   useEffect(() => {
@@ -221,32 +219,164 @@ export default function SignatureDishesDynamic() {
   const startIndex = currentIndex * itemsPerPage
   const currentDishes = dishes.slice(startIndex, startIndex + itemsPerPage)
 
-  // Mostrar loader hasta que esté hidratado y los datos estén listos
-  if (!isClient || loading) {
+  // Mostrar loader hasta que esté completamente listo
+  if (!isClient || loading || !isReady) {
     return (
       <section id="signature-menu" className="py-16 sm:py-24 lg:py-32 px-4 md:px-8 relative overflow-hidden">
+        {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950"></div>
+        
+        {/* Animated loading particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(8)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-emerald-400/30 rounded-full"
+              style={{
+                left: `${20 + (i * 10)}%`,
+                top: `${30 + (i % 3) * 20}%`,
+              }}
+              animate={{
+                scale: [0.5, 1.2, 0.5],
+                opacity: [0.3, 0.8, 0.3],
+                y: [0, -20, 0],
+              }}
+              transition={{
+                duration: 2 + (i * 0.2),
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+                delay: i * 0.3,
+              }}
+            />
+          ))}
+        </div>
+
         <div className="container mx-auto max-w-7xl relative z-10">
-          <div className="text-center mb-12 sm:mb-16 lg:mb-20">
-            <div className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 mb-6 sm:mb-8">
-              <div className="w-4 h-4 sm:w-5 sm:h-5 mr-2 bg-emerald-400/20 rounded animate-pulse"></div>
-              <div className="w-48 h-4 bg-white/10 rounded animate-pulse"></div>
-            </div>
-            <div className="w-96 h-12 bg-gradient-to-r from-white/10 to-white/5 rounded-lg mx-auto mb-6 animate-pulse"></div>
-            <div className="w-full max-w-3xl h-6 bg-white/5 rounded mx-auto animate-pulse"></div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+          {/* Loading Header */}
+          <motion.div 
+            className="text-center mb-12 sm:mb-16 lg:mb-20"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <motion.div 
+              className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 mb-6 sm:mb-8"
+              animate={{ scale: [1, 1.02, 1] }}
+              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+            >
+              <motion.div 
+                className="w-4 h-4 sm:w-5 sm:h-5 mr-2 bg-emerald-400 rounded-full"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+              />
+              <span className="text-emerald-400 text-xs sm:text-sm font-medium">CARGANDO ESPECIALIDADES</span>
+            </motion.div>
+
+            <motion.div
+              className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-600"
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+            >
+              Nuestras Especialidades
+            </motion.div>
+
+            <motion.p 
+              className="text-base sm:text-lg lg:text-xl text-zinc-300 max-w-3xl mx-auto leading-relaxed px-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.7 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
+              Preparando nuestros mejores platos para ti...
+            </motion.p>
+          </motion.div>
+          
+          {/* Loading Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16">
             {[...Array(3)].map((_, index) => (
-              <div key={index} className="overflow-hidden rounded-2xl sm:rounded-3xl bg-zinc-900/50 backdrop-blur-sm border border-white/10">
-                <div className="aspect-[4/3] w-full bg-gradient-to-b from-zinc-800/70 to-zinc-900/70 animate-pulse"></div>
+              <motion.div 
+                key={index} 
+                className="overflow-hidden rounded-2xl sm:rounded-3xl bg-zinc-900/50 backdrop-blur-sm border border-white/10"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.6 }}
+              >
+                {/* Loading Image */}
+                <motion.div 
+                  className="aspect-[4/3] w-full bg-gradient-to-br from-zinc-800/70 via-zinc-700/50 to-zinc-900/70 relative overflow-hidden"
+                  animate={{ 
+                    background: [
+                      'linear-gradient(135deg, rgba(39, 39, 42, 0.7), rgba(63, 63, 70, 0.5), rgba(39, 39, 42, 0.7))',
+                      'linear-gradient(135deg, rgba(63, 63, 70, 0.5), rgba(39, 39, 42, 0.7), rgba(63, 63, 70, 0.5))',
+                      'linear-gradient(135deg, rgba(39, 39, 42, 0.7), rgba(63, 63, 70, 0.5), rgba(39, 39, 42, 0.7))'
+                    ]
+                  }}
+                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                >
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                  />
+                </motion.div>
+                
+                {/* Loading Content */}
                 <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                  <div className="h-5 sm:h-6 bg-zinc-800/70 rounded-md w-3/4 animate-pulse"></div>
-                  <div className="h-3 sm:h-4 bg-zinc-800/70 rounded-md w-full animate-pulse"></div>
-                  <div className="h-3 sm:h-4 bg-zinc-800/70 rounded-md w-2/3 animate-pulse"></div>
+                  <motion.div 
+                    className="h-5 sm:h-6 bg-zinc-800/70 rounded-md w-3/4"
+                    animate={{ opacity: [0.5, 0.8, 0.5] }}
+                    transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY, delay: index * 0.2 }}
+                  />
+                  <motion.div 
+                    className="h-3 sm:h-4 bg-zinc-800/70 rounded-md w-full"
+                    animate={{ opacity: [0.5, 0.8, 0.5] }}
+                    transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY, delay: index * 0.2 + 0.3 }}
+                  />
+                  <motion.div 
+                    className="h-3 sm:h-4 bg-zinc-800/70 rounded-md w-2/3"
+                    animate={{ opacity: [0.5, 0.8, 0.5] }}
+                    transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY, delay: index * 0.2 + 0.6 }}
+                  />
+                  
+                  {/* Loading stars */}
+                  <div className="flex items-center gap-1 pt-2">
+                    {[...Array(5)].map((_, starIndex) => (
+                      <motion.div
+                        key={starIndex}
+                        className="w-3 h-3 bg-emerald-400/30 rounded-full"
+                        animate={{ scale: [0.8, 1.1, 0.8], opacity: [0.3, 0.7, 0.3] }}
+                        transition={{ 
+                          duration: 1, 
+                          repeat: Number.POSITIVE_INFINITY, 
+                          delay: starIndex * 0.1 + index * 0.3 
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
+
+          {/* Loading CTA */}
+          <motion.div 
+            className="text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+          >
+            <motion.div
+              className="inline-flex items-center px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full bg-gradient-to-r from-emerald-600/30 to-teal-700/30 border border-emerald-500/20"
+              animate={{ scale: [1, 1.02, 1] }}
+              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+            >
+              <motion.div
+                className="w-4 h-4 mr-2 border-2 border-emerald-400 border-t-transparent rounded-full"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+              />
+              <span className="text-emerald-400 font-medium">Cargando carta completa...</span>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
     )
@@ -258,7 +388,12 @@ export default function SignatureDishesDynamic() {
       <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950"></div>
 
       {/* Floating particles */}
-      <div className="absolute inset-0 overflow-hidden">
+      <motion.div 
+        className="absolute inset-0 overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
         {particles.map((particle, i) => (
           <motion.div
             key={i}
@@ -280,7 +415,7 @@ export default function SignatureDishesDynamic() {
             }}
           />
         ))}
-      </div>
+      </motion.div>
 
       <motion.div 
         className="container mx-auto max-w-7xl relative z-10"
