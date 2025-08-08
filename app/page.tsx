@@ -38,12 +38,44 @@ const SignatureDishes = dynamic(() => import("@/components/signature-dishes-work
   )
 })
 
+// Lazy load below-the-fold sections
+const ValuesSection = dynamic(() => import("@/components/values-section"), { 
+  ssr: false,
+  loading: () => <div className="h-72 bg-zinc-900/20 animate-pulse" />
+})
+const Experience = dynamic(() => import("@/components/experience"), { 
+  ssr: false,
+  loading: () => <div className="h-96 bg-zinc-900/20 animate-pulse" />
+})
+const ChefSection = dynamic(() => import("@/components/chef-section"), { 
+  ssr: false,
+  loading: () => <div className="h-80 bg-zinc-900/20 animate-pulse" />
+})
+const Testimonials = dynamic(() => import("@/components/testimonials"), { 
+  ssr: false,
+  loading: () => <div className="h-64 bg-zinc-900/20 animate-pulse" />
+})
+const ContactSection = dynamic(() => import("@/components/contact-section"), { 
+  ssr: false,
+  loading: () => <div className="h-96 bg-zinc-900/20 animate-pulse" />
+})
+const Footer = dynamic(() => import("@/components/footer"), {
+  ssr: false,
+  loading: () => <div className="h-40 bg-zinc-900/20" />
+})
+
 export default function Home() {
   return (
     <main className="min-h-screen">
       <Navbar />
       <CriticalHero />
       <SignatureDishes />
+      <ValuesSection />
+      <Experience />
+      <ChefSection />
+      <Testimonials />
+      <ContactSection />
+      <Footer />
     </main>
   )
 }
