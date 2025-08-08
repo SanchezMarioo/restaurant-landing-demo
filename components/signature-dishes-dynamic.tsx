@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion } from "framer-motion"
 import { Star, ArrowRight, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -9,14 +9,9 @@ import { cn } from "@/lib/utils"
 import DishCard from "./signature-dishes-card"
 import type { Dish } from "@/lib/api"
 
-export default function SignatureDishes() {
-  const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  })
-
-  const y = useTransform(scrollYProgress, [0, 1], [15, -15])
+export default function SignatureDishesDynamic() {
+  const [isClient, setIsClient] = useState(false)
+  
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isManualNavigation, setIsManualNavigation] = useState(false)
   const [particles, setParticles] = useState<Array<{ left: number; top: number; delay: number; duration: number }>>([])
@@ -27,8 +22,20 @@ export default function SignatureDishes() {
   // Responsive items per page
   const [itemsPerPage, setItemsPerPage] = useState(3)
 
+  // Manejar hidratación del cliente
+  useEffect(() => {
+    // Timeout para asegurar hidratación completa
+    const timer = setTimeout(() => {
+      setIsClient(true)
+    }, 100)
+    
+    return () => clearTimeout(timer)
+  }, [])
+
   // Fetch dishes from API
   useEffect(() => {
+    if (!isClient) return
+    
     const fetchDishes = async () => {
       try {
         const response = await fetch('/api/dishes')
@@ -123,9 +130,11 @@ export default function SignatureDishes() {
     }
 
     fetchDishes()
-  }, [])
+  }, [isClient])
   
   useEffect(() => {
+    if (!isClient) return
+    
     const handleResize = () => {
       if (window.innerWidth < 768) {
         setItemsPerPage(1)
@@ -139,7 +148,7 @@ export default function SignatureDishes() {
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  }, [isClient])
 
   const totalPages = Math.ceil(dishes.length / itemsPerPage)
 
@@ -170,6 +179,8 @@ export default function SignatureDishes() {
 
   // Auto-advance slider (only when not manually navigating)
   useEffect(() => {
+    if (!isClient || totalPages <= 1) return
+    
     if (!isManualNavigation && totalPages > 1) {
       autoPlayRef.current = setTimeout(() => {
         setCurrentIndex(prev => (prev + 1) % totalPages)
@@ -181,10 +192,12 @@ export default function SignatureDishes() {
         clearTimeout(autoPlayRef.current)
       }
     }
-  }, [currentIndex, isManualNavigation, totalPages])
+  }, [currentIndex, isManualNavigation, totalPages, isClient])
 
   // Generate particles only on client side
   useEffect(() => {
+    if (!isClient) return
+    
     // Only generate particles if user doesn't prefer reduced motion
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
     if (mq.matches) return
@@ -203,12 +216,13 @@ export default function SignatureDishes() {
     // Delay particle generation to not block initial render
     const timer = setTimeout(generateParticles, 500)
     return () => clearTimeout(timer)
-  }, [])
+  }, [isClient])
 
   const startIndex = currentIndex * itemsPerPage
   const currentDishes = dishes.slice(startIndex, startIndex + itemsPerPage)
 
-  if (loading) {
+  // Mostrar loader hasta que esté hidratado y los datos estén listos
+  if (!isClient || loading) {
     return (
       <section id="signature-menu" className="py-16 sm:py-24 lg:py-32 px-4 md:px-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950"></div>
@@ -239,7 +253,7 @@ export default function SignatureDishes() {
   }
 
   return (
-    <section id="signature-menu" className="py-16 sm:py-24 lg:py-32 px-4 md:px-8 relative overflow-hidden" ref={ref}>
+    <section id="signature-menu" className="py-16 sm:py-24 lg:py-32 px-4 md:px-8 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950"></div>
 
@@ -269,7 +283,6 @@ export default function SignatureDishes() {
       </div>
 
       <motion.div 
-        style={{ y }} 
         className="container mx-auto max-w-7xl relative z-10"
       >
         {/* Header */}
@@ -384,4 +397,3 @@ export default function SignatureDishes() {
     </section>
   )
 }
-

@@ -1,13 +1,11 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { motion, AnimatePresence } from "framer-motion"
 import { usePathname } from "next/navigation"
 
 // Define section IDs for better type safety
@@ -107,46 +105,79 @@ export default function Navbar() {
         </Button>
 
         {/* Logo */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center justify-center"
-        >
+        <div className="flex items-center justify-center">
           <Link href="/" className="font-serif text-2xl font-bold text-white">
             LUMIÈRE
           </Link>
-        </motion.div>
+        </div>
 
         {/* Desktop navigation */}
         <nav className="hidden lg:flex items-center space-x-8">
-          <NavLink
+          <a
             href="/#experience"
-            isActive={isHomePage && activeSection === "experience"}
-            onClick={() => scrollToSection("experience")}
+            onClick={(e) => {
+              e.preventDefault()
+              scrollToSection("experience")
+            }}
+            className={cn(
+              "font-medium transition-all duration-200 relative group text-white/70 hover:text-white",
+              isHomePage && activeSection === "experience" && "text-white"
+            )}
           >
             Experiencia
-          </NavLink>
-          <NavLink
+            <span
+              className={cn(
+                "absolute -bottom-1 left-0 h-px bg-white transition-all duration-300",
+                isHomePage && activeSection === "experience" ? "w-full" : "w-0 group-hover:w-full"
+              )}
+            ></span>
+          </a>
+          <a
             href="/menu"
-            isActive={pathname === "/menu" || (isHomePage && activeSection === "menu")}
-            onClick={pathname === "/menu" ? undefined : () => scrollToSection("menu")}
+            onClick={(e) => {
+              if (pathname !== "/menu") {
+                e.preventDefault()
+                scrollToSection("menu")
+              }
+            }}
+            className={cn(
+              "font-medium transition-all duration-200 relative group text-white/70 hover:text-white",
+              (pathname === "/menu" || (isHomePage && activeSection === "menu")) && "text-white"
+            )}
           >
             Menú
-          </NavLink>
-          <NavLink
+            <span
+              className={cn(
+                "absolute -bottom-1 left-0 h-px bg-white transition-all duration-300",
+                (pathname === "/menu" || (isHomePage && activeSection === "menu")) ? "w-full" : "w-0 group-hover:w-full"
+              )}
+            ></span>
+          </a>
+          <a
             href="/#testimonials"
-            isActive={isHomePage && activeSection === "testimonials"}
-            onClick={() => scrollToSection("testimonials")}
+            onClick={(e) => {
+              e.preventDefault()
+              scrollToSection("testimonials")
+            }}
+            className={cn(
+              "font-medium transition-all duration-200 relative group text-white/70 hover:text-white",
+              isHomePage && activeSection === "testimonials" && "text-white"
+            )}
           >
             Testimonios
-          </NavLink>
-          <Button
-            className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full px-6"
+            <span
+              className={cn(
+                "absolute -bottom-1 left-0 h-px bg-white transition-all duration-300",
+                isHomePage && activeSection === "testimonials" ? "w-full" : "w-0 group-hover:w-full"
+              )}
+            ></span>
+          </a>
+          <button
+            className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full px-6 py-2 font-medium transition-all duration-200"
             onClick={() => scrollToSection("reservation")}
           >
             Reservar
-          </Button>
+          </button>
         </nav>
 
         {/* Mobile menu placeholder to balance the layout */}
@@ -154,78 +185,57 @@ export default function Navbar() {
       </div>
 
       {/* Mobile menu */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="lg:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-md border-b border-white/5 p-4 flex flex-col space-y-4"
+      {isMenuOpen && (
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-md border-b border-white/5 p-4 flex flex-col space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+          <a
+            href="/#experience"
+            onClick={(e) => {
+              e.preventDefault()
+              scrollToSection("experience")
+            }}
+            className={cn(
+              "font-medium transition-all duration-200 relative group text-white text-lg py-2 block",
+              isHomePage && activeSection === "experience" && "text-white"
+            )}
           >
-            <NavLink
-              href="/#experience"
-              isActive={isHomePage && activeSection === "experience"}
-              mobile
-              onClick={() => scrollToSection("experience")}
-            >
-              Experiencia
-            </NavLink>
-            <NavLink
-              href="/menu"
-              isActive={pathname === "/menu" || (isHomePage && activeSection === "menu")}
-              mobile
-              onClick={pathname === "/menu" ? undefined : () => scrollToSection("menu")}
-            >
-              Menú
-            </NavLink>
-            <NavLink
-              href="/#testimonials"
-              isActive={isHomePage && activeSection === "testimonials"}
-              mobile
-              onClick={() => scrollToSection("testimonials")}
-            >
-              Testimonios
-            </NavLink>
-            <Button
-              className="bg-emerald-600 hover:bg-emerald-700 text-white w-full rounded-full"
-              onClick={() => scrollToSection("reservation")}
-            >
-              Reservar
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
-  )
-}
-
-interface NavLinkProps {
-  href: string
-  children: React.ReactNode
-  isActive?: boolean
-  mobile?: boolean
-  onClick?: () => void
-}
-
-function NavLink({ href, children, isActive, mobile, onClick }: NavLinkProps) {
-  return (
-    <Link
-      href={href}
-      className={cn(
-        "font-medium transition-all duration-200 relative group",
-        mobile ? "text-white text-lg py-2 block" : "text-white/70 hover:text-white",
-        isActive && "text-white",
+            Experiencia
+          </a>
+          <a
+            href="/menu"
+            onClick={(e) => {
+              if (pathname !== "/menu") {
+                e.preventDefault()
+                scrollToSection("menu")
+              }
+            }}
+            className={cn(
+              "font-medium transition-all duration-200 relative group text-white text-lg py-2 block",
+              (pathname === "/menu" || (isHomePage && activeSection === "menu")) && "text-white"
+            )}
+          >
+            Menú
+          </a>
+          <a
+            href="/#testimonials"
+            onClick={(e) => {
+              e.preventDefault()
+              scrollToSection("testimonials")
+            }}
+            className={cn(
+              "font-medium transition-all duration-200 relative group text-white text-lg py-2 block",
+              isHomePage && activeSection === "testimonials" && "text-white"
+            )}
+          >
+            Testimonios
+          </a>
+          <button
+            className="bg-emerald-600 hover:bg-emerald-700 text-white w-full rounded-full py-3 font-medium transition-all duration-200"
+            onClick={() => scrollToSection("reservation")}
+          >
+            Reservar
+          </button>
+        </div>
       )}
-      onClick={onClick}
-    >
-      {children}
-      <span
-        className={cn(
-          "absolute -bottom-1 left-0 h-px bg-white transition-all duration-300",
-          isActive ? "w-full" : "w-0 group-hover:w-full",
-        )}
-      ></span>
-    </Link>
+    </header>
   )
 }

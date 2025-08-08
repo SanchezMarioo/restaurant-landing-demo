@@ -15,10 +15,16 @@ interface DishCardProps {
     description: string
     technique: string
     price: string
-    image: string
+    image: {
+      id: number
+      url: string
+      alt?: string
+      width?: number
+      height?: number
+    } | string // Support both formats for backward compatibility
     rating: number
     featured: boolean
-    category: string // Added category to props
+    category: string
   }
   index: number
 }
@@ -26,6 +32,22 @@ interface DishCardProps {
 export default function DishCard({ dish, index }: DishCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const { ref, isInView, isLoaded, handleImageLoad } = useImageLazyLoad<HTMLDivElement>()
+
+  // Helper function to get image URL
+  const getImageUrl = () => {
+    if (typeof dish.image === 'string') {
+      return dish.image || "/placeholder.svg"
+    }
+    return dish.image.url || "/placeholder.svg"
+  }
+
+  // Helper function to get image alt text
+  const getImageAlt = () => {
+    if (typeof dish.image === 'object' && dish.image.alt) {
+      return dish.image.alt
+    }
+    return dish.name
+  }
 
   return (
     <LazyMotionDiv
@@ -60,8 +82,8 @@ export default function DishCard({ dish, index }: DishCardProps) {
           className="h-full w-full"
         >
           <OptimizedImage
-            src={dish.image || "/placeholder.svg"}
-            alt={dish.name}
+            src={getImageUrl()}
+            alt={getImageAlt()}
             fill
             className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"

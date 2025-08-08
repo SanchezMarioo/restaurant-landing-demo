@@ -21,6 +21,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'api.mariosanchez.store',
+        port: '',
+        pathname: '/api/media/**',
+      },
     ],
   },
   experimental: {

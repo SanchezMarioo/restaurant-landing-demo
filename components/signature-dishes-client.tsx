@@ -9,7 +9,11 @@ import { cn } from "@/lib/utils"
 import DishCard from "./signature-dishes-card"
 import type { Dish } from "@/lib/api"
 
-export default function SignatureDishes() {
+interface SignatureDishesClientProps {
+  dishes: Dish[]
+}
+
+export default function SignatureDishesClient({ dishes }: SignatureDishesClientProps) {
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -21,109 +25,9 @@ export default function SignatureDishes() {
   const [isManualNavigation, setIsManualNavigation] = useState(false)
   const [particles, setParticles] = useState<Array<{ left: number; top: number; delay: number; duration: number }>>([])
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
-  const [dishes, setDishes] = useState<Dish[]>([])
-  const [loading, setLoading] = useState(true)
 
   // Responsive items per page
   const [itemsPerPage, setItemsPerPage] = useState(3)
-
-  // Fetch dishes from API
-  useEffect(() => {
-    const fetchDishes = async () => {
-      try {
-        const response = await fetch('/api/dishes')
-        if (response.ok) {
-          const data = await response.json()
-          setDishes(data)
-        } else {
-          // Fallback to static data if API fails
-          setDishes([
-            {
-              id: 1,
-              name: "Solomillo Wellington",
-              subtitle: "Especialidad de la Casa",
-              description: "Solomillo de ternera envuelto en hojaldre con duxelle de setas y foie gras, acompañado de salsa de vino tinto",
-              technique: "Técnica tradicional francesa",
-              price: "42€",
-              image: {
-                id: 1,
-                url: "https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
-                alt: "Solomillo Wellington",
-                width: 800,
-                height: 600
-              },
-              rating: 4.9,
-              featured: true,
-              category: "Especialidad de la Casa",
-            },
-            {
-              id: 2,
-              name: "Lubina en Costra de Sal",
-              subtitle: "Pescado Fresco",
-              description: "Lubina fresca del Mediterráneo cocinada en costra de sal con hierbas aromáticas y aceite de oliva virgen extra",
-              technique: "Cocción tradicional mediterránea",
-              price: "38€",
-              image: {
-                id: 2,
-                url: "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3",
-                alt: "Lubina en Costra de Sal",
-                width: 800,
-                height: 600
-              },
-              rating: 4.8,
-              featured: true,
-              category: "Pescado Fresco",
-            },
-            {
-              id: 3,
-              name: "Tarta Tatin de Manzana",
-              subtitle: "Postre Clásico",
-              description: "Tarta invertida de manzana caramelizada con masa quebrada artesanal, servida con helado de vainilla bourbon",
-              technique: "Repostería francesa tradicional",
-              price: "16€",
-              image: {
-                id: 3,
-                url: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3",
-                alt: "Tarta Tatin de Manzana",
-                width: 800,
-                height: 600
-              },
-              rating: 4.9,
-              featured: true,
-              category: "Postre Clásico",
-            }
-          ])
-        }
-      } catch (error) {
-        console.error('Error fetching dishes:', error)
-        // Use fallback data
-        setDishes([
-          {
-            id: 1,
-            name: "Solomillo Wellington",
-            subtitle: "Especialidad de la Casa",
-            description: "Solomillo de ternera envuelto en hojaldre con duxelle de setas y foie gras, acompañado de salsa de vino tinto",
-            technique: "Técnica tradicional francesa",
-            price: "42€",
-            image: {
-              id: 1,
-              url: "https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
-              alt: "Solomillo Wellington",
-              width: 800,
-              height: 600
-            },
-            rating: 4.9,
-            featured: true,
-            category: "Especialidad de la Casa",
-          }
-        ])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchDishes()
-  }, [])
   
   useEffect(() => {
     const handleResize = () => {
@@ -170,7 +74,7 @@ export default function SignatureDishes() {
 
   // Auto-advance slider (only when not manually navigating)
   useEffect(() => {
-    if (!isManualNavigation && totalPages > 1) {
+    if (!isManualNavigation) {
       autoPlayRef.current = setTimeout(() => {
         setCurrentIndex(prev => (prev + 1) % totalPages)
       }, 6000)
@@ -208,36 +112,6 @@ export default function SignatureDishes() {
   const startIndex = currentIndex * itemsPerPage
   const currentDishes = dishes.slice(startIndex, startIndex + itemsPerPage)
 
-  if (loading) {
-    return (
-      <section id="signature-menu" className="py-16 sm:py-24 lg:py-32 px-4 md:px-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950"></div>
-        <div className="container mx-auto max-w-7xl relative z-10">
-          <div className="text-center mb-12 sm:mb-16 lg:mb-20">
-            <div className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 mb-6 sm:mb-8">
-              <div className="w-4 h-4 sm:w-5 sm:h-5 mr-2 bg-emerald-400/20 rounded animate-pulse"></div>
-              <div className="w-48 h-4 bg-white/10 rounded animate-pulse"></div>
-            </div>
-            <div className="w-96 h-12 bg-gradient-to-r from-white/10 to-white/5 rounded-lg mx-auto mb-6 animate-pulse"></div>
-            <div className="w-full max-w-3xl h-6 bg-white/5 rounded mx-auto animate-pulse"></div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-            {[...Array(3)].map((_, index) => (
-              <div key={index} className="overflow-hidden rounded-2xl sm:rounded-3xl bg-zinc-900/50 backdrop-blur-sm border border-white/10">
-                <div className="aspect-[4/3] w-full bg-gradient-to-b from-zinc-800/70 to-zinc-900/70 animate-pulse"></div>
-                <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                  <div className="h-5 sm:h-6 bg-zinc-800/70 rounded-md w-3/4 animate-pulse"></div>
-                  <div className="h-3 sm:h-4 bg-zinc-800/70 rounded-md w-full animate-pulse"></div>
-                  <div className="h-3 sm:h-4 bg-zinc-800/70 rounded-md w-2/3 animate-pulse"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
-
   return (
     <section id="signature-menu" className="py-16 sm:py-24 lg:py-32 px-4 md:px-8 relative overflow-hidden" ref={ref}>
       {/* Background */}
@@ -268,10 +142,7 @@ export default function SignatureDishes() {
         ))}
       </div>
 
-      <motion.div 
-        style={{ y }} 
-        className="container mx-auto max-w-7xl relative z-10"
-      >
+      <motion.div style={{ y }} className="container mx-auto max-w-7xl relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -297,7 +168,7 @@ export default function SignatureDishes() {
 
         {/* Dishes Grid/Slider */}
         <div className="relative mb-12 sm:mb-16">
-          {/* Navigation Controls - Only show when there are multiple pages */}
+          {/* Navigation Controls - Only show on mobile when there are multiple pages */}
           {totalPages > 1 && (
             <div className="flex justify-center items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8">
               <button
@@ -384,4 +255,3 @@ export default function SignatureDishes() {
     </section>
   )
 }
-
