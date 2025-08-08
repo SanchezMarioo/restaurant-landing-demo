@@ -10,8 +10,10 @@ const nextConfig = {
     // Optimización mejorada de imágenes
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 3600,
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: 'https',
@@ -26,11 +28,23 @@ const nextConfig = {
     optimizePackageImports: ['framer-motion', 'lucide-react', '@radix-ui/react-icons'],
     // Preload links críticos
     typedRoutes: true,
+    // Turbopack para desarrollo más rápido
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
   },
   compiler: {
     // Remover console.log en producción
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  // Configuraciones de producción
+  poweredByHeader: false,
+  compress: true,
   // Optimizaciones de webpack compatibles con Next.js
   webpack: (config, { dev, isServer }) => {
     // Solo en producción
@@ -39,7 +53,7 @@ const nextConfig = {
       config.optimization.splitChunks = {
         chunks: 'all',
         minSize: 20000,
-        maxSize: 244000,
+        maxSize: 200000,
         cacheGroups: {
           vendor: {
             test: /[\\/]node_modules[\\/]/,

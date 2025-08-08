@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import Image from "next/image"
-import { motion } from "framer-motion"
+import { useState } from "react"
+import OptimizedImage from "./optimized-image"
+import { LazyMotionDiv } from "./lazy-motion"
 import { Star } from 'lucide-react'
 import { cn } from "@/lib/utils"
-import { useInView } from "@/hooks/use-in-view"
+import { useImageLazyLoad } from "@/hooks/use-optimized-lazy-load"
 
 interface DishCardProps {
   dish: {
@@ -25,11 +25,10 @@ interface DishCardProps {
 
 export default function DishCard({ dish, index }: DishCardProps) {
   const [isHovered, setIsHovered] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [ref, isInView] = useInView<HTMLDivElement>()
+  const { ref, isInView, isLoaded, handleImageLoad } = useImageLazyLoad<HTMLDivElement>()
 
   return (
-    <motion.div
+    <LazyMotionDiv
       ref={ref}
       className="group relative overflow-hidden rounded-2xl sm:rounded-3xl bg-zinc-900/50 backdrop-blur-sm border border-white/10 hover:border-emerald-500/30 transition-all duration-500"
       initial={{ opacity: 0, y: 15 }}
@@ -52,7 +51,7 @@ export default function DishCard({ dish, index }: DishCardProps) {
 
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden">
-        <motion.div
+        <LazyMotionDiv
           animate={{
             scale: isHovered ? 1.02 : 1,
             filter: isHovered ? "brightness(1.05)" : "brightness(1)",
@@ -60,17 +59,17 @@ export default function DishCard({ dish, index }: DishCardProps) {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="h-full w-full"
         >
-          <Image
+          <OptimizedImage
             src={dish.image || "/placeholder.svg"}
             alt={dish.name}
             fill
-            className={cn("object-cover transition-all duration-500", isLoaded ? "opacity-100" : "opacity-0")}
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            quality={75}
-            loading={index < 3 ? "eager" : "lazy"}
-            onLoad={() => setIsLoaded(true)}
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            quality={index < 3 ? 85 : 75}
+            priority={index < 3}
+            onLoad={handleImageLoad}
           />
-        </motion.div>
+        </LazyMotionDiv>
 
         {/* Floating price */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-black/70 backdrop-blur-sm px-2 py-1 sm:px-3 sm:py-1 rounded-full">
@@ -85,7 +84,7 @@ export default function DishCard({ dish, index }: DishCardProps) {
         )}
 
         {/* Technique overlay - Only show on hover for desktop */}
-        <motion.div
+        <LazyMotionDiv
           className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 hidden sm:block"
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 5 }}
@@ -94,7 +93,7 @@ export default function DishCard({ dish, index }: DishCardProps) {
           <div className="bg-emerald-600/90 backdrop-blur-sm px-3 py-2 rounded-lg">
             <p className="text-white text-xs font-medium">{dish.technique}</p>
           </div>
-        </motion.div>
+        </LazyMotionDiv>
       </div>
 
       {/* Content */}
@@ -113,7 +112,7 @@ export default function DishCard({ dish, index }: DishCardProps) {
       </div>
 
       {/* Glow effect on hover */}
-      <motion.div
+      <LazyMotionDiv
         className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-2xl sm:rounded-3xl -z-10"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{
@@ -121,7 +120,9 @@ export default function DishCard({ dish, index }: DishCardProps) {
           scale: isHovered ? 1.02 : 0.95,
         }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-      />
-    </motion.div>
+      >
+        <div></div>
+      </LazyMotionDiv>
+    </LazyMotionDiv>
   )
 }
