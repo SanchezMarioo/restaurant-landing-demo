@@ -1,18 +1,19 @@
 "use client"
 
 import { motion, useScroll, useTransform } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
+import { useInView } from "@/hooks/use-in-view"
 import { MapPin, Phone, Mail, Clock, Car, Utensils } from "lucide-react"
 import dynamic from "next/dynamic"
 
-// Importar el mapa de forma dinámica para evitar problemas de SSR
+// Lazy load map only when needed
 const SimpleLeafletMap = dynamic(() => import('./simple-leaflet-map'), {
   ssr: false,
   loading: () => (
     <div className="h-full w-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center rounded-2xl">
       <div className="text-center text-white">
-        <div className="text-2xl mb-2">🗺️</div>
-        <p>Cargando mapa...</p>
+        <div className="animate-spin w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full mx-auto mb-2"></div>
+        <p className="text-sm">Cargando mapa...</p>
       </div>
     </div>
   ),
@@ -65,7 +66,22 @@ export default function ContactSection() {
     offset: ["start end", "end start"],
   })
 
-  const y = useTransform(scrollYProgress, [0, 1], [50, -50])
+  const y = useTransform(scrollYProgress, [0, 1], [30, -30])
+  const [mapRef, mapInView] = useInView<HTMLDivElement>({ 
+    threshold: 0.1, 
+    rootMargin: "100px",
+    once: true 
+  })
+  
+  const [shouldLoadMap, setShouldLoadMap] = useState(false)
+
+  useEffect(() => {
+    if (mapInView) {
+      // Delay map loading slightly to improve perceived performance
+      const timer = setTimeout(() => setShouldLoadMap(true), 200)
+      return () => clearTimeout(timer)
+    }
+  }, [mapInView])
 
   return (
     <section id="contact" className="py-32 px-4 md:px-8 relative overflow-hidden" ref={ref}>
@@ -159,15 +175,26 @@ export default function ContactSection() {
 
           {/* Map and Location */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
             className="relative"
           >
-            {/* Map placeholder */}
-            <div className="relative h-96 w-full rounded-2xl overflow-hidden mb-6">
-              <SimpleLeafletMap />
+            {/* Map placeholder with lazy loading */}
+            <div ref={mapRef} className="relative h-96 w-full rounded-2xl overflow-hidden mb-6 bg-zinc-900/50">
+              {shouldLoadMap ? (
+                <SimpleLeafletMap />
+              ) : (
+                <div className="h-full w-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex items-center justify-center cursor-pointer group"
+                     onClick={() => setShouldLoadMap(true)}>
+                  <div className="text-center text-white/70 group-hover:text-white transition-colors">
+                    <MapPin className="w-12 h-12 mx-auto mb-3 text-emerald-400" />
+                    <p className="text-sm font-medium">Haz clic para cargar el mapa</p>
+                    <p className="text-xs text-zinc-500 mt-1">Calle Gourmet 123, Madrid</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Location details */}

@@ -66,7 +66,8 @@ export default function DishCard({ dish, index }: DishCardProps) {
             fill
             className={cn("object-cover transition-all duration-500", isLoaded ? "opacity-100" : "opacity-0")}
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            priority={index < 2}
+            quality={75}
+            loading={index < 3 ? "eager" : "lazy"}
             onLoad={() => setIsLoaded(true)}
           />
         </motion.div>

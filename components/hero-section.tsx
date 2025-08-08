@@ -9,29 +9,41 @@ import { ChefHat } from "lucide-react"
 export default function HeroSection() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
-  // Posiciones predefinidas para evitar hydration mismatch (reducidas para mejor rendimiento)
+  // Reducir partículas para mejor rendimiento
   const particlePositions = [
     { left: 84.76, top: 76.60 },
     { left: 21.07, top: 47.18 },
     { left: 39.65, top: 87.98 },
-    { left: 44.17, top: 52.26 },
     { left: 47.22, top: 1.50 },
-    { left: 54.80, top: 96.54 },
   ]
 
   useEffect(() => {
     setIsLoaded(true)
+    
+    // Check for reduced motion preference
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mq.matches)
+    
+    const handleChange = () => setPrefersReducedMotion(mq.matches)
+    mq.addEventListener('change', handleChange)
+    return () => mq.removeEventListener('change', handleChange)
   }, [])
 
   useEffect(() => {
+    if (prefersReducedMotion) return
+    
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
+      // Throttle mouse movement updates
+      requestAnimationFrame(() => {
+        setMousePosition({ x: e.clientX, y: e.clientY })
+      })
     }
-
-    window.addEventListener("mousemove", handleMouseMove)
+    
+    window.addEventListener("mousemove", handleMouseMove, { passive: true })
     return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+  }, [prefersReducedMotion])
 
   const scrollToReservation = () => {
     const reservationSection = document.getElementById("reservation")
@@ -48,56 +60,63 @@ export default function HeroSection() {
       {/* Innovative culinary background */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3"
+          src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"
           alt="Modern culinary innovation"
           fill
           priority
           className="object-cover opacity-40"
           sizes="100vw"
+          quality={75}
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
         />
         <div className="absolute inset-0 bg-gradient-to-br from-black via-black/90 to-black"></div>
       </div>
 
-      {/* Interactive light effect */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none opacity-30"
-        style={{
-          background: `radial-gradient(400px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(16, 185, 129, 0.1), transparent 40%)`,
-        }}
-      />
+      {/* Interactive light effect - only if motion is allowed */}
+      {!prefersReducedMotion && (
+        <motion.div
+          className="absolute inset-0 pointer-events-none opacity-15"
+          style={{
+            background: `radial-gradient(300px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(16, 185, 129, 0.06), transparent 40%)`,
+            willChange: 'auto'
+          }}
+        />
+      )}
 
-      {/* Floating molecular elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {particlePositions.map((position, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-emerald-400/20 rounded-full"
-            style={{
-              left: `${position.left}%`,
-              top: `${position.top}%`,
-            }}
-            animate={isLoaded ? {
-              scale: [0.5, 1.5, 0.5],
-              opacity: [0.2, 0.8, 0.2],
-              x: [0, (i % 2 === 0 ? 30 : -30)],
-              y: [0, (i % 3 === 0 ? 20 : -20)],
-            } : {}}
-            transition={{
-              duration: 6 + (i % 4),
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-              delay: i * 0.2,
-            }}
-          />
-        ))}
-      </div>
+      {/* Floating molecular elements - reduced for performance */}
+      {!prefersReducedMotion && (
+        <div className="absolute inset-0 overflow-hidden">
+          {particlePositions.map((position, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1.5 h-1.5 bg-emerald-400/15 rounded-full"
+              style={{
+                left: `${position.left}%`,
+                top: `${position.top}%`,
+              }}
+              animate={isLoaded ? {
+                scale: [0.8, 1.2, 0.8],
+                opacity: [0.3, 0.6, 0.3],
+                y: [0, -20, 0],
+              } : {}}
+              transition={{
+                duration: 4 + i * 0.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: i * 0.3,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="container mx-auto px-4 md:px-8 relative z-10">
         <div className="max-w-6xl mx-auto text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
           >
             {/* Innovation badge */}
             <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/5 backdrop-blur-xl border border-white/20 mb-8">
@@ -116,7 +135,7 @@ export default function HeroSection() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: isLoaded ? 1 : 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
           >
             <p className="text-xl md:text-2xl text-zinc-300 max-w-4xl mx-auto mb-4 leading-relaxed">
               <span className="text-emerald-400 font-medium">
@@ -130,9 +149,9 @@ export default function HeroSection() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
+            transition={{ duration: 0.4, delay: 0.5 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-6"
           >
             <Button

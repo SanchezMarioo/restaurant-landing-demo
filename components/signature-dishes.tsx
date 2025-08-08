@@ -166,18 +166,24 @@ export default function SignatureDishes() {
 
   // Generate particles only on client side
   useEffect(() => {
+    // Only generate particles if user doesn't prefer reduced motion
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (mq.matches) return
+    
     const generateParticles = () => {
-      const particleCount = window.innerWidth < 768 ? 8 : 15
+      const particleCount = window.innerWidth < 768 ? 6 : 12 // Reduced count
       const newParticles = [...Array(particleCount)].map(() => ({
         left: Math.random() * 100,
         top: Math.random() * 100,
         delay: Math.random() * 2,
-        duration: Math.random() * 6 + 4,
+        duration: Math.random() * 4 + 6, // Slower animations
       }))
       setParticles(newParticles)
     }
 
-    generateParticles()
+    // Delay particle generation to not block initial render
+    const timer = setTimeout(generateParticles, 500)
+    return () => clearTimeout(timer)
   }, [])
 
   const startIndex = currentIndex * itemsPerPage
