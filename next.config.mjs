@@ -31,27 +31,44 @@ const nextConfig = {
     // Remover console.log en producción
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Optimizaciones de webpack
+  // Optimizaciones de webpack compatibles con Next.js
   webpack: (config, { dev, isServer }) => {
     // Solo en producción
     if (!dev && !isServer) {
-      // Split chunks más agresivo para better caching
+      // Split chunks optimizado para Next.js
       config.optimization.splitChunks = {
         chunks: 'all',
+        minSize: 20000,
+        maxSize: 244000,
         cacheGroups: {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
+            priority: -10,
             chunks: 'all',
           },
           framerMotion: {
             test: /[\\/]node_modules[\\/]framer-motion[\\/]/,
             name: 'framer-motion',
+            priority: 20,
+            chunks: 'all',
+          },
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            name: 'react',
+            priority: 20,
+            chunks: 'all',
+          },
+          ui: {
+            test: /[\\/]components[\\/]ui[\\/]/,
+            name: 'ui',
+            priority: 10,
             chunks: 'all',
           },
         },
       }
     }
+
     return config
   },
 }

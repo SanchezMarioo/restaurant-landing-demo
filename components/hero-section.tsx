@@ -6,6 +6,17 @@ import { motion } from "framer-motion"
 import Image from "next/image"
 import { ChefHat } from "lucide-react"
 
+// Preload critical styles
+const preloadStyles = () => {
+  if (typeof window !== 'undefined') {
+    const link = document.createElement('link')
+    link.rel = 'preload'
+    link.as = 'style'
+    link.href = '/_next/static/css/app/layout.css'
+    document.head.appendChild(link)
+  }
+}
+
 export default function HeroSection() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
@@ -21,6 +32,7 @@ export default function HeroSection() {
 
   useEffect(() => {
     setIsLoaded(true)
+    preloadStyles()
     
     // Check for reduced motion preference
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -133,9 +145,9 @@ export default function HeroSection() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isLoaded ? 1 : 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
+            initial={false}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.1 }}
           >
             <p className="text-xl md:text-2xl text-zinc-300 max-w-4xl mx-auto mb-4 leading-relaxed">
               <span className="text-emerald-400 font-medium">

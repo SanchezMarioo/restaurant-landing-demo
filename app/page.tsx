@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic"
 import Navbar from "@/components/navbar"
-import HeroSection from "@/components/hero-section"
+import CriticalHero from "@/components/critical-hero"
 
 // Lazy load all below-the-fold components to minimize initial JS bundle
 const SignatureDishes = dynamic(() => import("@/components/signature-dishes"), { 
@@ -69,7 +69,7 @@ export default function Home() {
   {/* Mount custom cursor only on clients; dynamic import ensures it's not in initial JS */}
   <CustomCursor />
       <Navbar />
-      <HeroSection />
+      <CriticalHero />
       <SignatureDishes />
       <ValuesSection />
       <Experience />
