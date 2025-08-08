@@ -45,6 +45,31 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
+  /* Performance optimizations */
+  .animate-in {
+    animation-fill-mode: both;
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Hardware acceleration for smooth animations */
+  .will-change-transform {
+    will-change: transform;
+  }
+  
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;

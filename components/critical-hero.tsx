@@ -40,16 +40,15 @@ export default function CriticalHero() {
             </h1>
           </div>
 
-          {/* Critical LCP content - no animation */}
+          {/* Critical LCP content - optimized */}
           <div>
             <p className="text-xl md:text-2xl text-zinc-300 max-w-4xl mx-auto mb-4 leading-relaxed">
               <span className="text-emerald-400 font-medium">
-                Donde la tradición culinaria se encuentra con la elegancia moderna
+                Tradición culinaria y elegancia moderna
               </span>
             </p>
-            <p className="text-lg text-zinc-400 max-w-3xl mx-auto mb-12">
-              Una experiencia gastronómica refinada con ingredientes de primera calidad y técnicas culinarias
-              tradicionales.
+            <p className="text-lg text-zinc-400 max-w-3xl mx-auto mb-12 will-change-auto">
+              Experiencia gastronómica refinada con ingredientes premium y técnicas tradicionales.
             </p>
           </div>
 
