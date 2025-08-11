@@ -45,21 +45,22 @@ interface DishCardProps {
 function DishCard({ dish, index }: DishCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [imageSrc, setImageSrc] = useState<string>(dish.image || "/placeholder.jpg")
   const [ref, isInView] = useInView<HTMLDivElement>()
 
   return (
     <motion.div
       ref={ref}
-      className="group relative overflow-hidden rounded-2xl bg-zinc-900/80 backdrop-blur-sm border border-zinc-800/50 shadow-xl h-full"
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+      className="group relative overflow-hidden rounded-2xl bg-zinc-900/80 backdrop-blur-sm border border-zinc-800/50 shadow-xl h-full will-change-transform"
+    initial={{ y: 30 }}
+    animate={isInView ? { y: 0 } : { y: 30 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
     >
       {/* Loading skeleton */}
       {!isLoaded && (
-        <div className="absolute inset-0 bg-zinc-800/50 animate-pulse z-0">
+        <div className="absolute inset-0 bg-zinc-800/60 animate-pulse z-20">
           <div className="aspect-[4/3] w-full bg-gradient-to-b from-zinc-800/70 to-zinc-900/70"></div>
           <div className="p-6 space-y-4">
             <div className="h-6 bg-zinc-800/70 rounded-md w-3/4"></div>
@@ -69,7 +70,7 @@ function DishCard({ dish, index }: DishCardProps) {
         </div>
       )}
 
-      <div className="aspect-[4/3] relative overflow-hidden">
+      <div className="aspect-[4/3] relative overflow-hidden bg-zinc-800">
         <motion.div
           className="h-full w-full"
           animate={{
@@ -79,13 +80,27 @@ function DishCard({ dish, index }: DishCardProps) {
           transition={{ duration: 0.4 }}
         >
           <Image
-            src={dish.image || "/placeholder.svg"}
+            src={imageSrc}
             alt={dish.name}
             fill
             className={cn("object-cover transition-all duration-500", isLoaded ? "opacity-100" : "opacity-0")}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={index < 6}
-            onLoad={() => setIsLoaded(true)}
+            onLoad={(e) => {
+              const img = e.currentTarget as HTMLImageElement
+              // Esperar a que termine de decodificar si es posible
+              if (typeof (img as any).decode === 'function') {
+                ;(img as any).decode().catch(() => {}).finally(() => setIsLoaded(true))
+              } else {
+                setIsLoaded(true)
+              }
+            }}
+            onError={() => {
+              if (imageSrc !== "/placeholder.jpg") {
+                setImageSrc("/placeholder.jpg")
+              }
+              setIsLoaded(true)
+            }}
           />
         </motion.div>
 
@@ -144,14 +159,15 @@ function DishCard({ dish, index }: DishCardProps) {
 function DishListItem({ dish, index }: DishCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [imageSrc, setImageSrc] = useState<string>(dish.image || "/placeholder.jpg")
   const [ref, isInView] = useInView<HTMLDivElement>()
 
   return (
     <motion.div
       ref={ref}
       className="group relative overflow-hidden rounded-xl bg-zinc-900/80 backdrop-blur-sm border border-zinc-800/50 shadow-xl"
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+  initial={{ y: 20 }}
+  animate={isInView ? { y: 0 } : { y: 20 }}
       transition={{ duration: 0.5, delay: index * 0.05 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
@@ -160,9 +176,9 @@ function DishListItem({ dish, index }: DishCardProps) {
         {/* Image container */}
         <div className="md:w-1/3 relative">
           {/* Loading skeleton */}
-          {!isLoaded && <div className="absolute inset-0 bg-zinc-800/50 animate-pulse z-0"></div>}
+          {!isLoaded && <div className="absolute inset-0 bg-zinc-800/60 animate-pulse z-20"></div>}
 
-          <div className="aspect-video md:aspect-square relative overflow-hidden">
+          <div className="aspect-video md:aspect-square relative overflow-hidden bg-zinc-800">
             <motion.div
               animate={{
                 scale: isHovered ? 1.05 : 1,
@@ -172,12 +188,25 @@ function DishListItem({ dish, index }: DishCardProps) {
               className="h-full w-full"
             >
               <Image
-                src={dish.image || "/placeholder.svg"}
+                src={imageSrc}
                 alt={dish.name}
                 fill
                 className={cn("object-cover transition-all duration-500", isLoaded ? "opacity-100" : "opacity-0")}
                 sizes="(max-width: 768px) 100vw, 33vw"
-                onLoad={() => setIsLoaded(true)}
+                onLoad={(e) => {
+                  const img = e.currentTarget as HTMLImageElement
+                  if (typeof (img as any).decode === 'function') {
+                    ;(img as any).decode().catch(() => {}).finally(() => setIsLoaded(true))
+                  } else {
+                    setIsLoaded(true)
+                  }
+                }}
+                onError={() => {
+                  if (imageSrc !== "/placeholder.jpg") {
+                    setImageSrc("/placeholder.jpg")
+                  }
+                  setIsLoaded(true)
+                }}
               />
             </motion.div>
           </div>

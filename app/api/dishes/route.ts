@@ -3,11 +3,11 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   try {
     // Intentar obtener datos de Payload CMS
-    const response = await fetch('https://api.mariosanchez.store/api/DishedFeatures', {
+    const response = await fetch('https://api.mariosanchez.store/api/dishes?depth=1&limit=100', {
       headers: {
         'Content-Type': 'application/json',
       },
-      next: { revalidate: 300 } // Cache por 5 minutos
+      next: { revalidate: 300, tags: ['dishes'] } // Cache + tag para revalidación on-demand
     })
     
     if (response.ok) {
@@ -23,16 +23,22 @@ export async function GET() {
         price: dish.price,
         image: {
           id: dish.image?.id || 1,
-          url: dish.image?.url?.startsWith('http') 
-            ? dish.image.url 
+          url: (dish.image?.url && dish.image?.url.startsWith('http'))
+            ? dish.image.url
             : `https://api.mariosanchez.store${dish.image?.url || '/api/media/placeholder.jpg'}`,
           alt: dish.image?.alt || dish.name,
           width: dish.image?.width || 800,
           height: dish.image?.height || 600
         },
-        rating: dish.rating || 4.8,
-        featured: dish.featured || true,
+  rating: dish.rating || 4.8,
+  // Asegurar booleano correcto sin forzar true cuando sea false/undefined
+  featured: !!dish.featured,
         category: dish.category || 'Especialidad de la Casa',
+        dietary: Array.isArray(dish.dietary) ? dish.dietary : [],
+        prepTime: dish.prepTime,
+        ingredients: Array.isArray(dish.ingredients)
+          ? dish.ingredients.map((it: any) => typeof it === 'string' ? it : it?.ingredient).filter(Boolean)
+          : [],
       })) || []
 
       return NextResponse.json(dishes)

@@ -106,10 +106,13 @@ export default function FeaturedDishes() {
     }
   }, [])
 
-  const categories = ["all", ...new Set(featuredDishes.map((dish) => dish.category))]
+  // Usar solo los platos con featured=true
+  const onlyFeatured = featuredDishes.filter((dish) => dish.featured)
+  const categories = ["all", ...new Set(onlyFeatured.map((dish) => dish.category))]
 
-  const filteredDishes =
-    activeCategory === "all" ? featuredDishes : featuredDishes.filter((dish) => dish.category === activeCategory)
+  const filteredDishes = (activeCategory === "all"
+    ? onlyFeatured
+    : onlyFeatured.filter((dish) => dish.category === activeCategory))
 
   return (
     <section id="menu" className="py-24 px-4 md:px-8 relative overflow-hidden" ref={ref}>

@@ -135,10 +135,15 @@ export default function Navbar() {
           <a
             href="/menu"
             onClick={(e) => {
-              if (pathname !== "/menu") {
-                e.preventDefault()
-                scrollToSection("menu")
+              if (isHomePage) {
+                const el = document.getElementById("menu")
+                if (el) {
+                  e.preventDefault()
+                  scrollToSection("menu")
+                  return
+                }
               }
+              // Dejar navegar a /menu normalmente
             }}
             className={cn(
               "font-medium transition-all duration-200 relative group text-white/70 hover:text-white",
@@ -203,10 +208,16 @@ export default function Navbar() {
           <a
             href="/menu"
             onClick={(e) => {
-              if (pathname !== "/menu") {
-                e.preventDefault()
-                scrollToSection("menu")
+              if (isHomePage) {
+                const el = document.getElementById("menu")
+                if (el) {
+                  e.preventDefault()
+                  scrollToSection("menu")
+                  return
+                }
               }
+              // Cerrar menú móvil y navegar
+              setIsMenuOpen(false)
             }}
             className={cn(
               "font-medium transition-all duration-200 relative group text-white text-lg py-2 block",

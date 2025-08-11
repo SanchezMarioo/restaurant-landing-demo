@@ -138,7 +138,9 @@ export default function SignatureDishesWorking() {
         if (response.ok) {
           const apiDishes = await response.json()
           if (apiDishes && apiDishes.length > 0) {
-            setDishes(apiDishes)
+            // Usar solo featured=true
+            const onlyFeatured = apiDishes.filter((d: Dish) => d.featured)
+            if (onlyFeatured.length > 0) setDishes(onlyFeatured)
           }
         }
       } catch (error) {

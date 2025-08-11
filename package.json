@@ -8,8 +8,10 @@
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
     "lint": "next lint",
-    "start": "next start",
-    "optimize": "next build && next export"
+  "start": "next start",
+  "optimize": "next build && next export",
+  "token": "node obtener-token.js",
+  "import:dishes": "node import-dishes.js"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
