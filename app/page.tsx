@@ -5,7 +5,6 @@ import CriticalHero from "@/components/critical-hero"
 
 // Load SignatureDishes dynamically with performance optimization
 const SignatureDishes = dynamic(() => import("@/components/signature-dishes-working"), { 
-  ssr: false,
   loading: () => (
     <section className="py-16 sm:py-24 lg:py-32 px-4 md:px-8 relative overflow-hidden opacity-0 animate-in fade-in duration-300">
       <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950"></div>
@@ -39,27 +38,21 @@ const SignatureDishes = dynamic(() => import("@/components/signature-dishes-work
 
 // Lazy load below-the-fold sections with more aggressive loading
 const ValuesSection = dynamic(() => import("@/components/values-section"), { 
-  ssr: false,
   loading: () => <div className="h-72 bg-zinc-900/10" />
 })
 const Experience = dynamic(() => import("@/components/experience"), { 
-  ssr: false,
   loading: () => <div className="h-96 bg-zinc-900/10" />
 })
 const ChefSection = dynamic(() => import("@/components/chef-section"), { 
-  ssr: false,
   loading: () => <div className="h-80 bg-zinc-900/10" />
 })
 const Testimonials = dynamic(() => import("@/components/testimonials"), { 
-  ssr: false,
   loading: () => <div className="h-64 bg-zinc-900/10" />
 })
 const ContactSection = dynamic(() => import("@/components/contact-section"), { 
-  ssr: false,
   loading: () => <div className="h-96 bg-zinc-900/10" />
 })
 const Footer = dynamic(() => import("@/components/footer"), {
-  ssr: false,
   loading: () => <div className="h-40 bg-zinc-900/10" />
 })
 
