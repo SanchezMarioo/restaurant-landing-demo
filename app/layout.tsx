@@ -1,4 +1,5 @@
 import type React from "react"
+import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import { Playfair_Display, Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -19,21 +20,74 @@ const inter = Inter({
   fallback: ['system-ui', 'sans-serif']
 })
 
-export const metadata = {
-  title: "Lumière - Experiencia Gastronómica",
-  description: "Descubre una experiencia culinaria sublime en Lumière Restaurant",
-  generator: 'v0.dev',
-  robots: 'index, follow',
-  keywords: 'restaurante, gastronomía, cocina gourmet, experiencia culinaria',
-  openGraph: {
-    title: 'Lumière - Experiencia Gastronómica',
-    description: 'Descubre una experiencia culinaria sublime en Lumière Restaurant',
-    type: 'website',
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Lumière · Restaurante gastronómico en Madrid",
+    template: "%s | Lumière"
   },
+  description:
+    "Restaurante gastronómico en Madrid con cocina de autor y productos de temporada. Reserva tu experiencia culinaria en Lumière.",
+  keywords: [
+    "restaurante gastronómico en Madrid",
+    "restaurantes Madrid",
+    "alta cocina Madrid",
+    "cocina de autor",
+    "degustación",
+    "menú degustación Madrid",
+    "Lumière restaurant"
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+  'max-snippet': -1,
+  'max-image-preview': 'large',
+  'max-video-preview': -1
+    }
+  },
+  alternates: {
+    canonical: "/",
+    languages: { es: "/" }
+  },
+  openGraph: {
+    type: "website",
+    url: new URL("/", siteUrl),
+    title: "Lumière · Restaurante gastronómico en Madrid",
+    description:
+      "Cocina contemporánea con raíces mediterráneas en el corazón de Madrid.",
+    siteName: "Lumière",
+    locale: "es_ES",
+    images: [
+      {
+        url: "/placeholder.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Lumière Restaurant – Alta gastronomía en Madrid"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lumière · Restaurante gastronómico en Madrid",
+    description:
+      "Vive una experiencia culinaria de alto nivel en Madrid.",
+    images: ["/placeholder.jpg"]
+  },
+  icons: {
+    icon: [{ url: "/placeholder-logo.svg" }],
+    shortcut: ["/placeholder-logo.svg"],
+    apple: ["/placeholder-logo.png"]
+  },
+  generator: "v0.dev"
 }
 
-export const viewport = {
-  width: 'device-width',
+export const viewport: Viewport = {
+  width: "device-width",
   initialScale: 1,
 }
 
@@ -85,6 +139,47 @@ export default function RootLayout({
         
         {/* Preload recursos críticos */}
         <link rel="preload" href="/placeholder.svg" as="image" type="image/svg+xml" />
+
+        {/* JSON-LD: Restaurant */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Restaurant',
+              name: 'Lumière',
+              url: siteUrl,
+              image: new URL('/placeholder.jpg', siteUrl).toString(),
+              servesCuisine: ['Mediterránea', 'Contemporánea'],
+              priceRange: '€€€',
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Madrid',
+                addressRegion: 'Madrid',
+                addressCountry: 'ES'
+              },
+              acceptsReservations: true,
+              sameAs: []
+            })
+          }}
+        />
+        {/* JSON-LD: Website with Search */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Lumière',
+              url: siteUrl,
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: `${siteUrl}/?q={search_term_string}`,
+                'query-input': 'required name=search_term_string'
+              }
+            })
+          }}
+        />
       </head>
       <body className="font-sans">
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false}>

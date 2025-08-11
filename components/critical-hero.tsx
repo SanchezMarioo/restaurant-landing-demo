@@ -11,7 +11,7 @@ export default function CriticalHero() {
       <div className="absolute inset-0 z-0">
         <Image
           src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"
-          alt="Modern culinary innovation"
+          alt="Restaurante gastronómico en Madrid, sala elegante en Lumière"
           fill
           priority
           className="object-cover opacity-40"
@@ -35,7 +35,7 @@ export default function CriticalHero() {
             <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl font-light mb-8 tracking-tight">
               <span className="block text-white/90">LUMIÈRE</span>
               <span className="block font-medium bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600 relative">
-                RESTAURANT
+                Restaurante gastronómico en Madrid
               </span>
             </h1>
           </div>
@@ -55,13 +55,14 @@ export default function CriticalHero() {
                 contain: 'layout style'
               }}
             >
-              Experiencia gastronómica refinada con ingredientes premium.
+              Experiencia gastronómica refinada con ingredientes premium y menú degustación en el centro de Madrid.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <Button
               className="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white px-10 py-6 text-lg rounded-full shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300"
+              aria-label="Ver la carta del restaurante"
               onClick={() => {
                 const menuSection = document.getElementById("menu")
                 if (menuSection) {
@@ -78,6 +79,7 @@ export default function CriticalHero() {
             <Button
               variant="outline"
               className="border-2 border-white/20 text-white hover:bg-white/10 hover:border-emerald-400/50 px-10 py-6 text-lg rounded-full backdrop-blur-xl transition-all duration-300 bg-transparent"
+              aria-label="Reservar mesa en Lumière"
               onClick={() => {
                 const reservationSection = document.getElementById("reservation")
                 if (reservationSection) {

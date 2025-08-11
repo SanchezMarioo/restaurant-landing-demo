@@ -1,6 +1,5 @@
-"use client"
-
 import dynamic from "next/dynamic"
+import type { Metadata } from "next"
 import Navbar from "@/components/navbar"
 import CriticalHero from "@/components/critical-hero"
 
@@ -64,9 +63,37 @@ const Footer = dynamic(() => import("@/components/footer"), {
   loading: () => <div className="h-40 bg-zinc-900/10" />
 })
 
+export const metadata: Metadata = {
+  title: "Restaurante gastronómico en Madrid | Lumière",
+  description:
+    "Lumière, cocina de autor y alta gastronomía en Madrid. Reserva tu mesa y descubre nuestro menú degustación.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Restaurante gastronómico en Madrid | Lumière",
+    description:
+      "Cocina contemporánea con raíces mediterráneas en Madrid.",
+    url: "/",
+    type: "website",
+  },
+}
+
 export default function Home() {
   return (
     <main className="min-h-screen">
+      {/* Breadcrumbs JSON-LD para mejorar contexto semántico */}
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Inicio', item: '/' },
+            ],
+          }),
+        }}
+      />
       <Navbar />
       <CriticalHero />
       <SignatureDishes />
