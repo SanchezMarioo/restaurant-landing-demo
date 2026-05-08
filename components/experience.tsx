@@ -1,8 +1,8 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion } from "framer-motion"
 import { Utensils, Wine, Users, Award } from "lucide-react"
 
 const experienceFeatures = [
@@ -33,15 +33,6 @@ const experienceFeatures = [
 ]
 
 export default function Experience() {
-  const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  })
-
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -50])
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, 50])
-  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.6, 1], [0.6, 1, 1, 0.6])
   const [isLoaded, setIsLoaded] = useState(false)
 
   // Posiciones predefinidas para evitar hydration mismatch
@@ -58,7 +49,7 @@ export default function Experience() {
   }, [])
 
   return (
-    <section id="experience-detail" className="py-32 px-4 md:px-6 relative overflow-hidden" ref={ref}>
+    <section id="experience" className="py-32 px-4 md:px-6 relative overflow-hidden">
       {/* Elegant background */}
       <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950"></div>
 
@@ -89,7 +80,7 @@ export default function Experience() {
 
       <div className="container mx-auto max-w-7xl relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-          <motion.div style={{ y: y1, opacity }} className="relative">
+          <motion.div className="relative">
             {/* Main image with elegant effect */}
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-zinc-900/50 backdrop-blur-sm border border-white/10">
               <Image
@@ -127,7 +118,7 @@ export default function Experience() {
             </div>
           </motion.div>
 
-          <motion.div style={{ y: y2 }} className="lg:pl-10">
+          <motion.div className="lg:pl-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

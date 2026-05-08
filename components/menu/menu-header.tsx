@@ -1,7 +1,6 @@
 "use client"
 
 import { motion } from "framer-motion"
-import Image from "next/image"
 
 interface MenuHeaderProps {
   isLoaded: boolean
@@ -9,22 +8,14 @@ interface MenuHeaderProps {
 
 export default function MenuHeader({ isLoaded }: MenuHeaderProps) {
   return (
-    <div className="relative">
+    <div className="relative bg-black/50 backdrop-blur-sm">
       {/* Header background */}
-      <div className="relative h-[300px] md:h-[400px] w-full overflow-hidden">
-        <Image
-          src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3"
-          alt="Nuestra carta"
-          fill
-          priority
-          className="object-cover opacity-40"
-          sizes="100vw"
-        />
+      <div className="relative h-[240px] md:h-[300px] w-full overflow-hidden bg-gradient-to-b from-zinc-900 to-black">
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black"></div>
       </div>
 
       {/* Header content */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className="absolute inset-0 flex items-end justify-center pb-10 md:pb-14">
         <div className="container mx-auto px-4 md:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

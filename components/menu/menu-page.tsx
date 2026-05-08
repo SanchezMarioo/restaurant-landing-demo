@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import useSWR from "swr"
 import { motion } from "framer-motion"
 import MenuHeader from "./menu-header"
 import MenuGrid from "./menu-grid"
@@ -17,7 +16,7 @@ export default function MenuPage() {
   const [activeDietary, setActiveDietary] = useState<DietaryOption | "all">("all")
   const [sortOption, setSortOption] = useState<"default" | "price-asc" | "price-desc" | "name">("default")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(true)
 
   // Filter and sort dishes when filters change
   useEffect(() => {
@@ -56,51 +55,15 @@ export default function MenuPage() {
     setFilteredDishes(result)
   }, [dishes, activeCategory, activeDietary, sortOption])
 
-  // SWR para refresco ligero y revalidación on-focus; cachea y minimiza re-renders
-  const fetcher = (url: string) => fetch(url).then((r) => r.json())
-  const { data: swrData } = useSWR('/api/dishes', fetcher, {
-    revalidateOnFocus: true,
-    revalidateIfStale: true,
-    refreshInterval: 0, // sin polling por defecto
-    dedupingInterval: 3000,
-  })
-
-  useEffect(() => {
-    setIsLoaded(true)
-  }, [])
-
-  useEffect(() => {
-    if (!swrData) return
-    const mapped: Dish[] = swrData.map((d: any) => ({
-      id: d.id,
-      name: d.name,
-      description: d.description,
-      price: d.price,
-      image: d.image?.url || d.image || '/placeholder.svg',
-      category: d.category,
-      featured: !!d.featured,
-      rating: Number(d.rating ?? 4.8),
-      prepTime: d.prepTime,
-      dietary: Array.isArray(d.dietary) ? d.dietary : [],
-      ingredients: Array.isArray(d.ingredients) ? d.ingredients : [],
-    }))
-    setDishes(mapped)
-    setFilteredDishes(mapped)
-  }, [swrData])
-
   return (
     <>
       <MenuNavbar />
 
-      <div className="pt-20 pb-24">
-        <MenuHeader isLoaded={isLoaded} />
+      <div className="min-h-screen bg-black text-white">
+        <div className="pb-24">
+          <MenuHeader isLoaded={isLoaded} />
 
-        <div className="container mx-auto px-4 md:px-8 mt-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
+          <div className="container mx-auto px-4 md:px-8 mt-4 pt-20">
             <MenuFilters
               activeCategory={activeCategory}
               setActiveCategory={setActiveCategory}
@@ -114,7 +77,7 @@ export default function MenuPage() {
             />
 
             <MenuGrid dishes={filteredDishes} viewMode={viewMode} />
-          </motion.div>
+          </div>
         </div>
       </div>
 

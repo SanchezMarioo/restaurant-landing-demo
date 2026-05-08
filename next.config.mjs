@@ -32,7 +32,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'api.mariosanchez.store',
+        hostname: 'lumiere-cms-marios-projects-8f8be8cc.vercel.app',
         port: '',
         pathname: '/api/media/file/**',
       },

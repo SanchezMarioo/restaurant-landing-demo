@@ -17,6 +17,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState<SectionId>("hero")
   const [lastScrollY, setLastScrollY] = useState(0)
+  const [isDesktop, setIsDesktop] = useState(false)
   const pathname = usePathname()
   const isHomePage = pathname === "/"
 
@@ -68,6 +69,18 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [handleScroll])
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 768px)")
+    const updateViewport = () => setIsDesktop(mediaQuery.matches)
+
+    updateViewport()
+    mediaQuery.addEventListener("change", updateViewport)
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateViewport)
+    }
+  }, [])
+
   const scrollToSection = (sectionId: SectionId) => {
     if (isHomePage) {
       const element = document.getElementById(sectionId)
@@ -89,20 +102,24 @@ export default function Navbar() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 md:px-8",
-        isScrolled ? "bg-black/80 backdrop-blur-md border-b border-white/5 py-2" : "bg-transparent py-4",
+        isScrolled
+          ? "bg-black/90 backdrop-blur-xl border-b border-white/10 py-2 shadow-[0_8px_32px_rgba(0,0,0,0.35)]"
+          : "bg-black/70 backdrop-blur-md border-b border-white/5 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.2)]",
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Mobile menu button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="lg:hidden text-white/70 hover:text-white hover:bg-white/5"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </Button>
+        {!isDesktop && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-white/70 hover:text-white hover:bg-white/5"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </Button>
+        )}
 
         {/* Logo */}
         <div className="flex items-center justify-center">
@@ -112,8 +129,9 @@ export default function Navbar() {
         </div>
 
         {/* Desktop navigation */}
-        <nav className="hidden lg:flex items-center space-x-8">
-          <a
+        {isDesktop && (
+          <nav className="flex items-center space-x-6 lg:space-x-8">
+            <a
             href="/#experience"
             onClick={(e) => {
               e.preventDefault()
@@ -132,7 +150,7 @@ export default function Navbar() {
               )}
             ></span>
           </a>
-          <a
+            <a
             href="/menu"
             onClick={(e) => {
               if (isHomePage) {
@@ -158,7 +176,7 @@ export default function Navbar() {
               )}
             ></span>
           </a>
-          <a
+            <a
             href="/#testimonials"
             onClick={(e) => {
               e.preventDefault()
@@ -177,21 +195,22 @@ export default function Navbar() {
               )}
             ></span>
           </a>
-          <button
-            className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full px-6 py-2 font-medium transition-all duration-200"
+            <button
+            className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full px-5 lg:px-6 py-2 font-medium transition-all duration-200 shadow-lg shadow-emerald-600/20"
             onClick={() => scrollToSection("reservation")}
           >
             Reservar
-          </button>
-        </nav>
+            </button>
+          </nav>
+        )}
 
         {/* Mobile menu placeholder to balance the layout */}
-        <div className="w-10 lg:hidden"></div>
+        {!isDesktop && <div className="w-10"></div>}
       </div>
 
       {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-md border-b border-white/5 p-4 flex flex-col space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+      {!isDesktop && isMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-md border-b border-white/5 p-4 flex flex-col space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
           <a
             href="/#experience"
             onClick={(e) => {

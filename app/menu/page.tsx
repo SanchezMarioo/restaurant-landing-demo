@@ -48,10 +48,7 @@ export default function Menu() {
         }}
       />
       {/* Gradient background */}
-      <div className="fixed inset-0 bg-gradient-radial from-zinc-800/20 via-black to-black -z-10"></div>
-
-      {/* Noise texture overlay */}
-      <div className="fixed inset-0 bg-[url('/noise.png')] opacity-[0.03] -z-10 pointer-events-none"></div>
+      <div className="fixed inset-0 bg-gradient-to-b from-zinc-800/20 via-black to-black -z-10"></div>
 
       <MenuPage />
     </main>

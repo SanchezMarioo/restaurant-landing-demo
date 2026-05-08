@@ -31,6 +31,7 @@ export default function MenuFilters({
   totalDishes,
 }: MenuFiltersProps) {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
+  const [isSortOpen, setIsSortOpen] = useState(false)
 
   const sortOptions = [
     { value: "default", label: "Destacados" },
@@ -40,8 +41,8 @@ export default function MenuFilters({
   ]
 
   return (
-    <div className="mb-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+    <div className="mb-8 relative">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 relative">
         <div className="flex items-center mb-4 md:mb-0">
           <h2 className="text-2xl font-serif font-medium mr-3">Platos</h2>
           <span className="text-white/60 text-sm bg-white/5 px-2 py-1 rounded-full">
@@ -63,30 +64,36 @@ export default function MenuFilters({
             )}
           </Button>
 
-          <div className="relative">
+          <div className="relative z-50">
             <Button
               variant="outline"
               size="sm"
               className="border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+              onClick={() => setIsSortOpen(!isSortOpen)}
             >
               Ordenar por
-              <ChevronDown className="w-4 h-4 ml-1" />
+              <ChevronDown className={cn("w-4 h-4 ml-1 transition-transform", isSortOpen && "rotate-180")} />
             </Button>
 
-            <div className="absolute right-0 top-full mt-1 bg-zinc-900 border border-zinc-800 rounded-lg shadow-xl z-10 w-56 py-1 hidden group-hover:block">
-              {sortOptions.map((option) => (
-                <button
-                  key={option.value}
-                  className={cn(
-                    "w-full text-left px-4 py-2 text-sm hover:bg-zinc-800",
-                    sortOption === option.value ? "text-emerald-400" : "text-zinc-300",
-                  )}
-                  onClick={() => setSortOption(option.value as any)}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
+            {isSortOpen && (
+              <div className="absolute right-0 top-full mt-1 bg-zinc-900 border border-zinc-800 rounded-lg shadow-xl z-50 w-56 py-1">
+                {sortOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    className={cn(
+                      "w-full text-left px-4 py-2 text-sm hover:bg-zinc-800",
+                      sortOption === option.value ? "text-emerald-400" : "text-zinc-300",
+                    )}
+                    onClick={() => {
+                      setSortOption(option.value as any)
+                      setIsSortOpen(false)
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex border border-zinc-800 rounded-md overflow-hidden">

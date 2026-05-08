@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import Image from "next/image"
 import { Star, Clock, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Dish } from "@/data/dishes"
@@ -45,31 +44,18 @@ interface DishCardProps {
 function DishCard({ dish, index }: DishCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
-  const [imageSrc, setImageSrc] = useState<string>(dish.image || "/placeholder.jpg")
   const [ref, isInView] = useInView<HTMLDivElement>()
 
   return (
     <motion.div
       ref={ref}
       className="group relative overflow-hidden rounded-2xl bg-zinc-900/80 backdrop-blur-sm border border-zinc-800/50 shadow-xl h-full will-change-transform"
-    initial={{ y: 30 }}
-    animate={isInView ? { y: 0 } : { y: 30 }}
+      initial={{ y: 30 }}
+      animate={isInView ? { y: 0 } : { y: 30 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
     >
-      {/* Loading skeleton */}
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-zinc-800/60 animate-pulse z-20">
-          <div className="aspect-[4/3] w-full bg-gradient-to-b from-zinc-800/70 to-zinc-900/70"></div>
-          <div className="p-6 space-y-4">
-            <div className="h-6 bg-zinc-800/70 rounded-md w-3/4"></div>
-            <div className="h-4 bg-zinc-800/70 rounded-md w-full"></div>
-            <div className="h-4 bg-zinc-800/70 rounded-md w-2/3"></div>
-          </div>
-        </div>
-      )}
-
       <div className="aspect-[4/3] relative overflow-hidden bg-zinc-800">
         <motion.div
           className="h-full w-full"
@@ -79,26 +65,13 @@ function DishCard({ dish, index }: DishCardProps) {
           }}
           transition={{ duration: 0.4 }}
         >
-          <Image
-            src={imageSrc}
+          <img
+            src={dish.image}
             alt={dish.name}
-            fill
-            className={cn("object-cover transition-all duration-500", isLoaded ? "opacity-100" : "opacity-0")}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority={index < 6}
-            onLoad={(e) => {
-              const img = e.currentTarget as HTMLImageElement
-              // Esperar a que termine de decodificar si es posible
-              if (typeof (img as any).decode === 'function') {
-                ;(img as any).decode().catch(() => {}).finally(() => setIsLoaded(true))
-              } else {
-                setIsLoaded(true)
-              }
-            }}
-            onError={() => {
-              if (imageSrc !== "/placeholder.jpg") {
-                setImageSrc("/placeholder.jpg")
-              }
+            className={cn("w-full h-full object-cover transition-opacity duration-500", isLoaded ? "opacity-100" : "opacity-50")}
+            onLoad={() => setIsLoaded(true)}
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = "/placeholder.jpg"
               setIsLoaded(true)
             }}
           />
@@ -159,15 +132,14 @@ function DishCard({ dish, index }: DishCardProps) {
 function DishListItem({ dish, index }: DishCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
-  const [imageSrc, setImageSrc] = useState<string>(dish.image || "/placeholder.jpg")
   const [ref, isInView] = useInView<HTMLDivElement>()
 
   return (
     <motion.div
       ref={ref}
       className="group relative overflow-hidden rounded-xl bg-zinc-900/80 backdrop-blur-sm border border-zinc-800/50 shadow-xl"
-  initial={{ y: 20 }}
-  animate={isInView ? { y: 0 } : { y: 20 }}
+      initial={{ y: 20 }}
+      animate={isInView ? { y: 0 } : { y: 20 }}
       transition={{ duration: 0.5, delay: index * 0.05 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
@@ -175,9 +147,6 @@ function DishListItem({ dish, index }: DishCardProps) {
       <div className="flex flex-col md:flex-row">
         {/* Image container */}
         <div className="md:w-1/3 relative">
-          {/* Loading skeleton */}
-          {!isLoaded && <div className="absolute inset-0 bg-zinc-800/60 animate-pulse z-20"></div>}
-
           <div className="aspect-video md:aspect-square relative overflow-hidden bg-zinc-800">
             <motion.div
               animate={{
@@ -187,51 +156,55 @@ function DishListItem({ dish, index }: DishCardProps) {
               transition={{ duration: 0.4 }}
               className="h-full w-full"
             >
-              <Image
-                src={imageSrc}
+              <img
+                src={dish.image}
                 alt={dish.name}
-                fill
-                className={cn("object-cover transition-all duration-500", isLoaded ? "opacity-100" : "opacity-0")}
-                sizes="(max-width: 768px) 100vw, 33vw"
-                onLoad={(e) => {
-                  const img = e.currentTarget as HTMLImageElement
-                  if (typeof (img as any).decode === 'function') {
-                    ;(img as any).decode().catch(() => {}).finally(() => setIsLoaded(true))
-                  } else {
-                    setIsLoaded(true)
-                  }
-                }}
-                onError={() => {
-                  if (imageSrc !== "/placeholder.jpg") {
-                    setImageSrc("/placeholder.jpg")
-                  }
+                className={cn("w-full h-full object-cover transition-opacity duration-500", isLoaded ? "opacity-100" : "opacity-50")}
+                onLoad={() => setIsLoaded(true)}
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = "/placeholder.jpg"
                   setIsLoaded(true)
                 }}
               />
             </motion.div>
           </div>
 
-          <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium">
+          <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium">
             {dish.category}
           </div>
 
           {dish.featured && (
-            <div className="absolute top-3 right-3 bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+            <div className="absolute top-2 right-2 bg-emerald-600 text-white px-2 py-1 rounded-full text-xs font-medium">
               Destacado
+            </div>
+          )}
+
+          {dish.dietary.length > 0 && (
+            <div className="absolute bottom-2 left-2 flex gap-1">
+              {dish.dietary.map((option) => (
+                <span
+                  key={option}
+                  className="bg-black/70 backdrop-blur-sm px-2 py-0.5 rounded-full text-xs font-medium"
+                  title={getDietaryLabel(option)}
+                >
+                  {getDietaryShortLabel(option)}
+                </span>
+              ))}
             </div>
           )}
         </div>
 
-        {/* Content */}
-        <div className="p-6 md:w-2/3 flex flex-col">
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="font-serif text-xl font-medium">{dish.name}</h3>
-            <span className="text-lg font-light ml-4">{dish.price}</span>
+        {/* Content container */}
+        <div className="flex-1 p-6 flex flex-col justify-between">
+          <div>
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="font-serif text-xl font-medium flex-1">{dish.name}</h3>
+              <span className="text-lg font-light ml-4 whitespace-nowrap">{dish.price}</span>
+            </div>
+            <p className="text-zinc-300 text-sm">{dish.description}</p>
           </div>
 
-          <p className="text-zinc-300 text-sm mb-4 flex-grow">{dish.description}</p>
-
-          <div className="flex flex-wrap items-center gap-4 mt-auto">
+          <div className="flex items-center justify-between mt-4">
             <div className="flex items-center">
               <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
               <span className="ml-1 text-sm font-medium">{dish.rating.toFixed(1)}</span>
@@ -243,29 +216,6 @@ function DishListItem({ dish, index }: DishCardProps) {
                 <span className="text-xs">{dish.prepTime} min</span>
               </div>
             )}
-
-            {dish.dietary.length > 0 && (
-              <div className="flex gap-1 items-center">
-                <Info className="w-3 h-3 text-zinc-400 mr-1" />
-                {dish.dietary.map((option) => (
-                  <span
-                    key={option}
-                    className="bg-zinc-800 px-2 py-0.5 rounded-full text-xs font-medium"
-                    title={getDietaryLabel(option)}
-                  >
-                    {getDietaryShortLabel(option)}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {dish.ingredients && (
-              <div className="w-full mt-2">
-                <p className="text-xs text-zinc-400">
-                  <span className="font-medium">Ingredientes:</span> {dish.ingredients.join(", ")}
-                </p>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -274,31 +224,22 @@ function DishListItem({ dish, index }: DishCardProps) {
 }
 
 function getDietaryLabel(option: string): string {
-  switch (option) {
-    case "Vegetariano":
-      return "Vegetariano"
-    case "Vegano":
-      return "Vegano"
-    case "Sin Gluten":
-      return "Sin Gluten"
-    case "Sin Lactosa":
-      return "Sin Lactosa"
-    default:
-      return option
+  const labels: Record<string, string> = {
+    Vegetariano: "Vegetariano",
+    Vegano: "Vegano",
+    "Sin Gluten": "Sin Gluten",
+    "Sin Lactosa": "Sin Lactosa",
   }
+  return labels[option] || option
 }
 
 function getDietaryShortLabel(option: string): string {
-  switch (option) {
-    case "Vegetariano":
-      return "VG"
-    case "Vegano":
-      return "VE"
-    case "Sin Gluten":
-      return "SG"
-    case "Sin Lactosa":
-      return "SL"
-    default:
-      return option
+  const labels: Record<string, string> = {
+    Vegetariano: "VG",
+    Vegano: "V",
+    "Sin Gluten": "SG",
+    "Sin Lactosa": "SL",
   }
+  return labels[option] || option.substring(0, 2).toUpperCase()
 }
+

@@ -31,7 +31,7 @@ export interface ApiResponse {
 
 export async function getSignatureDishes(): Promise<Dish[]> {
   try {
-    const response = await fetch('https://api.mariosanchez.store/api/DishedFeatures', {
+    const response = await fetch('/api/dishes', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -44,19 +44,8 @@ export async function getSignatureDishes(): Promise<Dish[]> {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const data: ApiResponse = await response.json()
-    
-    // Transform the data to match our component's expected format
-    return data.docs.map(dish => ({
-      ...dish,
-      image: {
-        ...dish.image,
-        // Ensure we have the full URL for the image
-        url: dish.image.url.startsWith('http') 
-          ? dish.image.url 
-          : `https://api.mariosanchez.store${dish.image.url}`
-      }
-    }))
+    const data: Dish[] = await response.json()
+    return data
   } catch (error) {
     console.error('Error fetching signature dishes:', error)
     

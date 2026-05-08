@@ -72,7 +72,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main className="relative min-h-screen">
       {/* Breadcrumbs JSON-LD para mejorar contexto semántico */}
       <script
         type="application/ld+json"

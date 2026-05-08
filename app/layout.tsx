@@ -97,11 +97,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={`${playfair.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="es" className={`dark ${playfair.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         {/* Estilos críticos inline básicos */}
-        <style dangerouslySetInnerHTML={{
+          <style dangerouslySetInnerHTML={{
           __html: `
+            /* Critical layout fallbacks */
             .min-h-screen{min-height:100vh}
             .bg-black{background-color:rgb(0 0 0)}
             .text-white{color:rgb(255 255 255)}
@@ -125,9 +126,20 @@ export default function RootLayout({
             .justify-between{justify-content:space-between}
             .space-x-8>:not([hidden])~:not([hidden]){margin-left:2rem}
             @media(min-width:1024px){
-              .lg\\:flex{display:flex !important}
-              .lg\\:hidden{display:none !important}
+              .lg\:flex{display:flex !important}
+              .lg\:hidden{display:none !important}
             }
+            /* Fallbacks para tema oscuro si Tailwind no está disponible */
+            html.dark, html[data-theme='dark'] {
+              background-color: #050505;
+              color: #ffffff;
+            }
+            html.dark body, html[data-theme='dark'] body {
+              background-color: #050505 !important;
+              color: #ffffff !important;
+            }
+            /* Asegurar visibilidad de bloques principales */
+            header, main, footer, section, article { display: block; }
           `
         }} />
         
@@ -138,8 +150,6 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://unpkg.com" />
         
         {/* Preload recursos críticos */}
-        <link rel="preload" href="/placeholder.svg" as="image" type="image/svg+xml" />
-
         {/* JSON-LD: Restaurant */}
         <script
           type="application/ld+json"

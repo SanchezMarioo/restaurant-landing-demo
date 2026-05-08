@@ -1,7 +1,6 @@
 "use client"
 
-import { motion, useScroll, useTransform } from "framer-motion"
-import { useRef } from "react"
+import { motion } from "framer-motion"
 import { Leaf, MapPin, Award, Users } from "lucide-react"
 
 const values = [
@@ -32,19 +31,11 @@ const values = [
 ]
 
 export default function ValuesSection() {
-  const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  })
-
-  const y = useTransform(scrollYProgress, [0, 1], [30, -30])
-
   return (
-    <section className="py-20 px-4 md:px-8 relative" ref={ref}>
+    <section className="py-20 px-4 md:px-8 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-zinc-900 to-zinc-950"></div>
 
-      <motion.div style={{ y }} className="container mx-auto max-w-7xl relative z-10">
+      <motion.div className="container mx-auto max-w-7xl relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

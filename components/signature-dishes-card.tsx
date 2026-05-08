@@ -79,7 +79,7 @@ export default function DishCard({ dish, index }: DishCardProps) {
             filter: isHovered ? "brightness(1.05)" : "brightness(1)",
           }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="h-full w-full"
+          className="relative h-full w-full"
         >
           <OptimizedImage
             src={getImageUrl()}

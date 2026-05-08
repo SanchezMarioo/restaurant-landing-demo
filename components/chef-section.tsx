@@ -1,24 +1,15 @@
 "use client"
 
-import { motion, useScroll, useTransform } from "framer-motion"
-import { useRef } from "react"
+import { motion } from "framer-motion"
 import Image from "next/image"
 import { Award, BookOpen, Users } from "lucide-react"
 
 export default function ChefSection() {
-  const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  })
-
-  const y = useTransform(scrollYProgress, [0, 1], [50, -50])
-
   return (
-    <section id="chef" className="py-32 px-4 md:px-8 relative overflow-hidden" ref={ref}>
+    <section id="chef" className="py-32 px-4 md:px-8 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950"></div>
 
-      <motion.div style={{ y }} className="container mx-auto max-w-7xl relative z-10">
+      <motion.div className="container mx-auto max-w-7xl relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Chef Image */}
           <motion.div

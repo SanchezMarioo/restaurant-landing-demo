@@ -34,7 +34,7 @@ export default function Reservation() {
   return (
     <section id="reservation" className="py-24 px-4 md:px-6 relative bg-gradient-to-b from-[#121212] to-[#0a0a0a]">
       {/* Background elements */}
-      <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none"></div>
+      <div className="absolute inset-0 pointer-events-none opacity-5"></div>
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
 
       <div className="container mx-auto max-w-7xl">

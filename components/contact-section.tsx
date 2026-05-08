@@ -1,6 +1,6 @@
 "use client"
 
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion } from "framer-motion"
 import { useRef, useState, useEffect } from "react"
 import { useInView } from "@/hooks/use-in-view"
 import { MapPin, Phone, Mail, Clock, Car, Utensils } from "lucide-react"
@@ -61,12 +61,6 @@ const additionalServices = [
 
 export default function ContactSection() {
   const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  })
-
-  const y = useTransform(scrollYProgress, [0, 1], [30, -30])
   const [mapRef, mapInView] = useInView<HTMLDivElement>({ 
     threshold: 0.1, 
     rootMargin: "100px",
@@ -92,7 +86,7 @@ export default function ContactSection() {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
       </div>
 
-      <motion.div style={{ y }} className="container mx-auto max-w-7xl relative z-10">
+      <motion.div className="container mx-auto max-w-7xl relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
