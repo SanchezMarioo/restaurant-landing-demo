@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function Menu() {
   return (
-    <main className="min-h-screen bg-black text-white overflow-hidden">
+    <main id="main" className="min-h-screen bg-bone text-char">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -47,9 +47,6 @@ export default function Menu() {
           })
         }}
       />
-      {/* Gradient background */}
-      <div className="fixed inset-0 bg-gradient-to-b from-zinc-800/20 via-black to-black -z-10"></div>
-
       <MenuPage />
     </main>
   )

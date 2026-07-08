@@ -1,245 +1,158 @@
 "use client"
 
 import { useState } from "react"
-import { motion } from "framer-motion"
-import { Star, Clock, Info } from "lucide-react"
-import { cn } from "@/lib/utils"
+import Reveal from "@/components/reveal"
 import type { Dish } from "@/data/dishes"
-import { useInView } from "@/hooks/use-in-view"
 
 interface MenuGridProps {
   dishes: Dish[]
   viewMode: "grid" | "list"
 }
 
+/**
+ * La carta foto-primero: los platos destacados ocupan doble celda con el
+ * nombre superpuesto sobre la fotografía (degradado de carbón cálido); el
+ * resto, fotos 4:5 generosas con caption de carta impresa. La vista lista
+ * conserva miniaturas: la foto nunca desaparece.
+ */
 export default function MenuGrid({ dishes, viewMode }: MenuGridProps) {
+  if (dishes.length === 0) {
+    return (
+      <div className="border-t border-hairline py-20">
+        <p className="font-serif text-2xl italic text-char">Ningún plato coincide con los filtros.</p>
+        <p className="mt-3 text-base text-umber">Pruebe con otra categoría u otra opción de dieta.</p>
+      </div>
+    )
+  }
+
+  if (viewMode === "list") {
+    return (
+      <div className="border-t border-hairline">
+        {dishes.map((dish, index) => (
+          <DishRow key={dish.id} dish={dish} index={index} />
+        ))}
+      </div>
+    )
+  }
+
   return (
-    <div
-      className={cn(
-        viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8" : "space-y-6",
-      )}
-    >
-      {dishes.length > 0 ? (
-        dishes.map((dish, index) =>
-          viewMode === "grid" ? (
-            <DishCard key={dish.id} dish={dish} index={index} />
-          ) : (
-            <DishListItem key={dish.id} dish={dish} index={index} />
-          ),
-        )
-      ) : (
-        <div className="col-span-full text-center py-12">
-          <p className="text-zinc-400 text-lg">No se encontraron platos con los filtros seleccionados.</p>
-        </div>
+    <div className="grid grid-flow-dense grid-cols-2 gap-x-4 gap-y-10 md:gap-x-6 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-14">
+      {dishes.map((dish, index) =>
+        dish.featured ? (
+          <FeaturedDishCard key={dish.id} dish={dish} index={index} />
+        ) : (
+          <DishCard key={dish.id} dish={dish} index={index} />
+        ),
       )}
     </div>
   )
 }
 
-interface DishCardProps {
-  dish: Dish
-  index: number
+function DietaryLabels({ dish }: { dish: Dish }) {
+  if (dish.dietary.length === 0) return null
+  return <span>{dish.dietary.join(" · ")}</span>
 }
 
-function DishCard({ dish, index }: DishCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [ref, isInView] = useInView<HTMLDivElement>()
-
+function DishImage({ dish }: { dish: Dish }) {
+  const [src, setSrc] = useState(dish.image)
   return (
-    <motion.div
-      ref={ref}
-      className="group relative overflow-hidden rounded-2xl bg-zinc-900/80 backdrop-blur-sm border border-zinc-800/50 shadow-xl h-full will-change-transform"
-      initial={{ y: 30 }}
-      animate={isInView ? { y: 0 } : { y: 30 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-    >
-      <div className="aspect-[4/3] relative overflow-hidden bg-zinc-800">
-        <motion.div
-          className="h-full w-full"
-          animate={{
-            scale: isHovered ? 1.05 : 1,
-            filter: isHovered ? "brightness(1.1)" : "brightness(1)",
-          }}
-          transition={{ duration: 0.4 }}
-        >
-          <img
-            src={dish.image}
-            alt={dish.name}
-            className={cn("w-full h-full object-cover transition-opacity duration-500", isLoaded ? "opacity-100" : "opacity-50")}
-            onLoad={() => setIsLoaded(true)}
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = "/placeholder.jpg"
-              setIsLoaded(true)
-            }}
+    <img
+      src={src}
+      alt={`${dish.name} — ${dish.description}`}
+      loading="lazy"
+      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+      onError={() => setSrc("/placeholder.jpg")}
+    />
+  )
+}
+
+/** Destacado: doble celda, la foto manda y el texto vive sobre ella. */
+function FeaturedDishCard({ dish, index }: { dish: Dish; index: number }) {
+  return (
+    <Reveal delay={(index % 4) * 0.06} className="col-span-2">
+      <article className="on-photo group relative overflow-hidden">
+        <div className="relative aspect-[3/2] w-full overflow-hidden">
+          <DishImage dish={dish} />
+          <div
+            className="absolute inset-0 bg-gradient-to-t from-char-deep/90 via-char-deep/30 to-transparent"
+            aria-hidden="true"
           />
-        </motion.div>
-
-        <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium">
-          {dish.category}
         </div>
 
-        {dish.featured && (
-          <div className="absolute top-3 right-3 bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-            Destacado
+        <div className="absolute inset-x-0 bottom-0 p-5 lg:p-7">
+          <p className="text-xs font-medium uppercase tracking-label text-terracotta-light">
+            Especialidad de la casa
+          </p>
+          <div className="mt-2 flex items-baseline">
+            <h3 className="font-serif text-2xl font-medium text-bone lg:text-[1.75rem]">{dish.name}</h3>
+            <span className="leaders" aria-hidden="true" />
+            <span className="font-serif text-xl text-bone">{dish.price}</span>
           </div>
-        )}
-
-        {dish.dietary.length > 0 && (
-          <div className="absolute bottom-3 left-3 flex gap-1">
-            {dish.dietary.map((option) => (
-              <span
-                key={option}
-                className="bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium"
-                title={getDietaryLabel(option)}
-              >
-                {getDietaryShortLabel(option)}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="font-serif text-xl font-medium">{dish.name}</h3>
-          <span className="text-lg font-light">{dish.price}</span>
-        </div>
-        <p className="text-zinc-300 text-sm mb-4">{dish.description}</p>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-            <span className="ml-1 text-sm font-medium">{dish.rating.toFixed(1)}</span>
-          </div>
-
-          {dish.prepTime && (
-            <div className="flex items-center text-zinc-400">
-              <Clock className="w-3 h-3 mr-1" />
-              <span className="text-xs">{dish.prepTime} min</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <motion.div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-    </motion.div>
-  )
-}
-
-function DishListItem({ dish, index }: DishCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [ref, isInView] = useInView<HTMLDivElement>()
-
-  return (
-    <motion.div
-      ref={ref}
-      className="group relative overflow-hidden rounded-xl bg-zinc-900/80 backdrop-blur-sm border border-zinc-800/50 shadow-xl"
-      initial={{ y: 20 }}
-      animate={isInView ? { y: 0 } : { y: 20 }}
-      transition={{ duration: 0.5, delay: index * 0.05 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-    >
-      <div className="flex flex-col md:flex-row">
-        {/* Image container */}
-        <div className="md:w-1/3 relative">
-          <div className="aspect-video md:aspect-square relative overflow-hidden bg-zinc-800">
-            <motion.div
-              animate={{
-                scale: isHovered ? 1.05 : 1,
-                filter: isHovered ? "brightness(1.1)" : "brightness(1)",
-              }}
-              transition={{ duration: 0.4 }}
-              className="h-full w-full"
-            >
-              <img
-                src={dish.image}
-                alt={dish.name}
-                className={cn("w-full h-full object-cover transition-opacity duration-500", isLoaded ? "opacity-100" : "opacity-50")}
-                onLoad={() => setIsLoaded(true)}
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = "/placeholder.jpg"
-                  setIsLoaded(true)
-                }}
-              />
-            </motion.div>
-          </div>
-
-          <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium">
+          <p className="mt-1.5 max-w-[56ch] text-sm leading-relaxed text-bone/85">{dish.description}</p>
+          <p className="mt-2.5 text-[0.6875rem] uppercase tracking-label text-bone/60">
             {dish.category}
-          </div>
-
-          {dish.featured && (
-            <div className="absolute top-2 right-2 bg-emerald-600 text-white px-2 py-1 rounded-full text-xs font-medium">
-              Destacado
-            </div>
-          )}
-
-          {dish.dietary.length > 0 && (
-            <div className="absolute bottom-2 left-2 flex gap-1">
-              {dish.dietary.map((option) => (
-                <span
-                  key={option}
-                  className="bg-black/70 backdrop-blur-sm px-2 py-0.5 rounded-full text-xs font-medium"
-                  title={getDietaryLabel(option)}
-                >
-                  {getDietaryShortLabel(option)}
-                </span>
-              ))}
-            </div>
-          )}
+            {dish.dietary.length > 0 && " · "}
+            <DietaryLabels dish={dish} />
+          </p>
         </div>
-
-        {/* Content container */}
-        <div className="flex-1 p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-serif text-xl font-medium flex-1">{dish.name}</h3>
-              <span className="text-lg font-light ml-4 whitespace-nowrap">{dish.price}</span>
-            </div>
-            <p className="text-zinc-300 text-sm">{dish.description}</p>
-          </div>
-
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center">
-              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              <span className="ml-1 text-sm font-medium">{dish.rating.toFixed(1)}</span>
-            </div>
-
-            {dish.prepTime && (
-              <div className="flex items-center text-zinc-400">
-                <Clock className="w-3 h-3 mr-1" />
-                <span className="text-xs">{dish.prepTime} min</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </motion.div>
+      </article>
+    </Reveal>
   )
 }
 
-function getDietaryLabel(option: string): string {
-  const labels: Record<string, string> = {
-    Vegetariano: "Vegetariano",
-    Vegano: "Vegano",
-    "Sin Gluten": "Sin Gluten",
-    "Sin Lactosa": "Sin Lactosa",
-  }
-  return labels[option] || option
+function DishCard({ dish, index }: { dish: Dish; index: number }) {
+  return (
+    <Reveal delay={(index % 4) * 0.06}>
+      <article className="group">
+        <div className="relative aspect-[4/5] overflow-hidden">
+          <DishImage dish={dish} />
+        </div>
+
+        <div className="mt-4 flex items-baseline">
+          <h3 className="font-serif text-xl font-medium text-char">{dish.name}</h3>
+          <span className="leaders" aria-hidden="true" />
+          <span className="font-serif text-lg text-terracotta-deep">{dish.price}</span>
+        </div>
+
+        <p className="mt-1.5 text-sm leading-relaxed text-umber">{dish.description}</p>
+
+        <p className="mt-2.5 text-[0.6875rem] uppercase tracking-label text-umber">
+          {dish.category}
+          {dish.dietary.length > 0 && " · "}
+          <DietaryLabels dish={dish} />
+        </p>
+      </article>
+    </Reveal>
+  )
 }
 
-function getDietaryShortLabel(option: string): string {
-  const labels: Record<string, string> = {
-    Vegetariano: "VG",
-    Vegano: "V",
-    "Sin Gluten": "SG",
-    "Sin Lactosa": "SL",
-  }
-  return labels[option] || option.substring(0, 2).toUpperCase()
-}
+function DishRow({ dish, index }: { dish: Dish; index: number }) {
+  return (
+    <Reveal delay={(index % 6) * 0.04}>
+      <article className="group flex gap-5 border-b border-hairline py-6 sm:gap-7">
+        <div className="relative h-24 w-24 shrink-0 overflow-hidden sm:h-28 sm:w-28">
+          <DishImage dish={dish} />
+        </div>
 
+        <div className="min-w-0 flex-1">
+          {dish.featured && (
+            <p className="mb-1 text-[0.6875rem] font-medium uppercase tracking-label text-terracotta">
+              Especialidad de la casa
+            </p>
+          )}
+          <div className="flex items-baseline">
+            <h3 className="font-serif text-xl font-medium text-char sm:text-2xl">{dish.name}</h3>
+            <span className="leaders" aria-hidden="true" />
+            <span className="font-serif text-lg text-terracotta-deep">{dish.price}</span>
+          </div>
+          <p className="mt-1.5 max-w-[65ch] text-sm leading-relaxed text-umber">{dish.description}</p>
+          <p className="mt-2 text-[0.6875rem] uppercase tracking-label text-umber">
+            {dish.category}
+            {dish.dietary.length > 0 && " · "}
+            <DietaryLabels dish={dish} />
+          </p>
+        </div>
+      </article>
+    </Reveal>
+  )
+}

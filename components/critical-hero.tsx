@@ -1,97 +1,101 @@
-"use client"
-
-import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { ChefHat } from "lucide-react"
+import Link from "next/link"
 
+/**
+ * Hero fotográfico: la foto ES el hero (viewport completo, a sangre),
+ * con degradado de carbón cálido direccional —nunca negro puro— y el
+ * texto en crema abajo a la izquierda. Un panel crema texturizado se
+ * solapa con la sección siguiente rompiendo el límite entre capas.
+ * Server component: la entrada orquestada es CSS pura (.hero-anim).
+ */
 export default function CriticalHero() {
   return (
-    <section id="hero" className="relative min-h-screen flex items-center pt-20 pb-16 overflow-hidden">
-      {/* Background Image - Critical for LCP */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"
-          alt="Restaurante gastronómico en Madrid, sala elegante en Lumière"
-          fill
-          priority
-          className="object-cover opacity-40"
-          sizes="100vw"
-          quality={85}
-          placeholder="blur"
-          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+    <section id="hero" className="relative">
+      {/* Fotografía protagonista */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div
+          className="hero-anim relative h-full w-full"
+          style={{ animationName: "hero-settle", animationDuration: "1.6s" }}
+        >
+          <Image
+            src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"
+            alt="Mesa de Lumière en penumbra cálida, un plato emplatado bajo la luz de la lámpara"
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+            quality={85}
+            placeholder="blur"
+            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+          />
+        </div>
+        {/* Degradado cálido direccional: denso abajo-izquierda, aire arriba-derecha */}
+        <div
+          className="absolute inset-0 bg-gradient-to-tr from-char-deep/90 via-char-deep/45 to-char-deep/10"
+          aria-hidden="true"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-black/90 to-black"></div>
       </div>
 
-      <div className="container mx-auto px-4 md:px-8 relative z-10">
-        <div className="max-w-6xl mx-auto text-center">
-          <div>
-            {/* Innovation badge */}
-            <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/5 backdrop-blur-xl border border-white/20 mb-8">
-              <ChefHat className="w-5 h-5 mr-2 text-emerald-400" />
-              <span className="text-emerald-300 font-medium">ALTA GASTRONOMÍA</span>
-            </div>
-
-            <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl font-light mb-8 tracking-tight">
-              <span className="block text-white/90">LUMIÈRE</span>
-              <span className="block font-medium bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600 relative">
-                Restaurante gastronómico en Madrid
+      {/* Texto sobre la foto */}
+      <div className="on-photo relative z-10 flex min-h-[100svh] flex-col justify-end">
+        <div className="mx-auto w-full max-w-[1400px] px-6 pb-10 pt-40 md:px-10">
+          <h1>
+            <span
+              className="hero-anim block text-sm font-medium uppercase tracking-label text-bone/80"
+              style={{ animationName: "hero-fade", animationDelay: "0.15s" }}
+            >
+              Restaurante gastronómico en Madrid
+            </span>
+            <span className="mt-6 block font-serif text-[clamp(2.75rem,7.5vw,6rem)] font-medium leading-[1.04] text-bone">
+              <span className="block overflow-hidden">
+                <span className="hero-anim block" style={{ animationName: "hero-rise", animationDelay: "0.3s" }}>
+                  El fuego <em className="font-normal italic text-terracotta-light">lento</em>
+                </span>
               </span>
-            </h1>
-          </div>
-
-          {/* Critical LCP content - optimized */}
-          <div>
-            <p className="text-xl md:text-2xl text-zinc-300 max-w-4xl mx-auto mb-4 leading-relaxed">
-              <span className="text-emerald-400 font-medium">
-                Tradición culinaria y elegancia moderna
+              <span className="block overflow-hidden">
+                <span className="hero-anim block" style={{ animationName: "hero-rise", animationDelay: "0.42s" }}>
+                  de Madrid
+                </span>
               </span>
-            </p>
-            <p 
-              className="text-lg text-zinc-400 max-w-3xl mx-auto mb-12"
-              style={{
-                fontFamily: 'system-ui, -apple-system, sans-serif',
-                lineHeight: '1.6',
-                contain: 'layout style'
-              }}
+            </span>
+          </h1>
+
+          <p
+            className="hero-anim mt-8 max-w-[46ch] text-lg leading-[1.6] text-bone/90"
+            style={{ animationName: "hero-fade", animationDelay: "0.6s" }}
+          >
+            Cocina de autor sobre producto de lonja y de huerta. Menú degustación
+            de siete pases, de martes a sábado.
+          </p>
+
+          <div
+            className="hero-anim mt-10 flex flex-wrap items-center gap-x-10 gap-y-6"
+            style={{ animationName: "hero-fade", animationDelay: "0.72s" }}
+          >
+            <a
+              href="#contact"
+              className="bg-terracotta px-8 py-4 text-sm font-medium uppercase tracking-label text-bone transition-colors duration-300 hover:bg-terracotta-deep"
             >
-              Experiencia gastronómica refinada con ingredientes premium y menú degustación en el centro de Madrid.
-            </p>
+              Reservar mesa
+            </a>
+            <Link
+              href="/menu"
+              className="border-b border-bone/70 pb-1 text-sm font-medium uppercase tracking-label text-bone transition-colors duration-300 hover:border-terracotta-light hover:text-terracotta-light"
+            >
+              Ver la carta
+            </Link>
           </div>
+        </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <Button
-              className="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white px-10 py-6 text-lg rounded-full shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300"
-              aria-label="Ver la carta del restaurante"
-              onClick={() => {
-                const menuSection = document.getElementById("menu")
-                if (menuSection) {
-                  window.scrollTo({
-                    top: menuSection.offsetTop - 80,
-                    behavior: "smooth",
-                  })
-                }
-              }}
-            >
-              Ver Nuestra Carta
-            </Button>
-
-            <Button
-              variant="outline"
-              className="border-2 border-white/20 text-white hover:bg-white/10 hover:border-emerald-400/50 px-10 py-6 text-lg rounded-full backdrop-blur-xl transition-all duration-300 bg-transparent"
-              aria-label="Reservar mesa en Lumière"
-              onClick={() => {
-                const reservationSection = document.getElementById("reservation")
-                if (reservationSection) {
-                  window.scrollTo({
-                    top: reservationSection.offsetTop - 80,
-                    behavior: "smooth",
-                  })
-                }
-              }}
-            >
-              Reservar Experiencia
-            </Button>
+        {/* Panel crema solapado: rompe el borde entre foto y sección siguiente */}
+        <div className="mx-auto w-full max-w-[1400px] px-6 md:px-10">
+          <div
+            className="hero-anim texture relative z-20 -mb-12 inline-block border border-hairline bg-bone px-7 py-5"
+            style={{ animationName: "hero-fade", animationDelay: "0.9s" }}
+          >
+            <p className="text-xs font-medium uppercase tracking-label text-terracotta">Servicio de hoy</p>
+            <p className="mt-2 font-serif text-lg text-char">13:00–15:30 · 20:00–23:00</p>
+            <p className="mt-0.5 text-sm text-umber">Calle Gourmet 123 · Madrid</p>
           </div>
         </div>
       </div>

@@ -1,9 +1,5 @@
 "use client"
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { ChevronDown, Grid, List, SlidersHorizontal, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { categories, dietaryOptions, type Category, type DietaryOption } from "@/data/dishes"
 
@@ -19,6 +15,18 @@ interface MenuFiltersProps {
   totalDishes: number
 }
 
+const sortOptions = [
+  { value: "default", label: "Destacados" },
+  { value: "price-asc", label: "Precio, de menor a mayor" },
+  { value: "price-desc", label: "Precio, de mayor a menor" },
+  { value: "name", label: "Alfabético" },
+] as const
+
+/**
+ * Filtros como fila tipográfica: pestañas de texto con subrayado activo
+ * terracota, select nativo para ordenar y conmutador de vista textual.
+ * Sin pills, sin paneles plegables, sin iconos.
+ */
 export default function MenuFilters({
   activeCategory,
   setActiveCategory,
@@ -30,216 +38,114 @@ export default function MenuFilters({
   setViewMode,
   totalDishes,
 }: MenuFiltersProps) {
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false)
-  const [isSortOpen, setIsSortOpen] = useState(false)
+  const tabClass = (active: boolean) =>
+    cn(
+      "whitespace-nowrap border-b-2 pb-3 text-sm font-medium uppercase tracking-label transition-colors duration-200",
+      active ? "border-terracotta text-char" : "border-transparent text-umber hover:text-char",
+    )
 
-  const sortOptions = [
-    { value: "default", label: "Destacados" },
-    { value: "price-asc", label: "Precio: menor a mayor" },
-    { value: "price-desc", label: "Precio: mayor a menor" },
-    { value: "name", label: "Alfabético" },
-  ]
+  const toggleClass = (active: boolean) =>
+    cn(
+      "text-sm font-medium uppercase tracking-label transition-colors duration-200",
+      active
+        ? "text-char underline decoration-terracotta decoration-2 underline-offset-8"
+        : "text-umber hover:text-char",
+    )
 
   return (
-    <div className="mb-8 relative">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 relative">
-        <div className="flex items-center mb-4 md:mb-0">
-          <h2 className="text-2xl font-serif font-medium mr-3">Platos</h2>
-          <span className="text-white/60 text-sm bg-white/5 px-2 py-1 rounded-full">
-            {totalDishes} {totalDishes === 1 ? "resultado" : "resultados"}
-          </span>
+    <div className="mb-14">
+      {/* Categorías */}
+      <div
+        className="flex gap-7 overflow-x-auto border-b border-hairline"
+        role="group"
+        aria-label="Filtrar por categoría"
+      >
+        <button
+          type="button"
+          aria-pressed={activeCategory === "all"}
+          className={tabClass(activeCategory === "all")}
+          onClick={() => setActiveCategory("all")}
+        >
+          Todos
+        </button>
+        {categories.map((category) => (
+          <button
+            key={category}
+            type="button"
+            aria-pressed={activeCategory === category}
+            className={tabClass(activeCategory === category)}
+            onClick={() => setActiveCategory(category)}
+          >
+            {category}s
+          </button>
+        ))}
+      </div>
+
+      {/* Dieta · recuento · orden · vista */}
+      <div className="mt-6 flex flex-wrap items-baseline justify-between gap-x-10 gap-y-5">
+        <div className="flex flex-wrap items-baseline gap-x-6 gap-y-3" role="group" aria-label="Filtrar por dieta">
+          <span className="text-xs uppercase tracking-label text-umber">Dieta</span>
+          <button
+            type="button"
+            aria-pressed={activeDietary === "all"}
+            className={toggleClass(activeDietary === "all")}
+            onClick={() => setActiveDietary("all")}
+          >
+            Todas
+          </button>
+          {dietaryOptions.map((option) => (
+            <button
+              key={option}
+              type="button"
+              aria-pressed={activeDietary === option}
+              className={toggleClass(activeDietary === option)}
+              onClick={() => setActiveDietary(option)}
+            >
+              {option}
+            </button>
+          ))}
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white"
-            onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-          >
-            <SlidersHorizontal className="w-4 h-4 mr-2" />
-            Filtros
-            {(activeCategory !== "all" || activeDietary !== "all") && (
-              <span className="ml-1 w-2 h-2 bg-emerald-500 rounded-full"></span>
-            )}
-          </Button>
+        <div className="flex flex-wrap items-baseline gap-x-10 gap-y-5">
+          <p className="text-sm text-umber" aria-live="polite">
+            {totalDishes} {totalDishes === 1 ? "plato" : "platos"}
+          </p>
 
-          <div className="relative z-50">
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white"
-              onClick={() => setIsSortOpen(!isSortOpen)}
+          <label className="flex items-baseline gap-3 text-xs uppercase tracking-label text-umber">
+            Ordenar
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value as MenuFiltersProps["sortOption"])}
+              className="cursor-pointer border-b border-char bg-transparent pb-1 text-sm font-medium uppercase tracking-label text-char"
             >
-              Ordenar por
-              <ChevronDown className={cn("w-4 h-4 ml-1 transition-transform", isSortOpen && "rotate-180")} />
-            </Button>
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
-            {isSortOpen && (
-              <div className="absolute right-0 top-full mt-1 bg-zinc-900 border border-zinc-800 rounded-lg shadow-xl z-50 w-56 py-1">
-                {sortOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    className={cn(
-                      "w-full text-left px-4 py-2 text-sm hover:bg-zinc-800",
-                      sortOption === option.value ? "text-emerald-400" : "text-zinc-300",
-                    )}
-                    onClick={() => {
-                      setSortOption(option.value as any)
-                      setIsSortOpen(false)
-                    }}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="flex border border-zinc-800 rounded-md overflow-hidden">
+          <div className="flex items-baseline gap-5" role="group" aria-label="Modo de vista">
             <button
-              className={cn(
-                "p-2",
-                viewMode === "grid"
-                  ? "bg-zinc-800 text-white"
-                  : "bg-transparent text-zinc-400 hover:text-white hover:bg-zinc-800/50",
-              )}
+              type="button"
+              aria-pressed={viewMode === "grid"}
+              className={toggleClass(viewMode === "grid")}
               onClick={() => setViewMode("grid")}
-              aria-label="Vista de cuadrícula"
             >
-              <Grid className="w-4 h-4" />
+              Cuadrícula
             </button>
             <button
-              className={cn(
-                "p-2",
-                viewMode === "list"
-                  ? "bg-zinc-800 text-white"
-                  : "bg-transparent text-zinc-400 hover:text-white hover:bg-zinc-800/50",
-              )}
+              type="button"
+              aria-pressed={viewMode === "list"}
+              className={toggleClass(viewMode === "list")}
               onClick={() => setViewMode("list")}
-              aria-label="Vista de lista"
             >
-              <List className="w-4 h-4" />
+              Lista
             </button>
           </div>
         </div>
       </div>
-
-      {/* Expanded filters */}
-      <motion.div
-        initial={{ height: 0, opacity: 0 }}
-        animate={{
-          height: isFiltersOpen ? "auto" : 0,
-          opacity: isFiltersOpen ? 1 : 0,
-        }}
-        transition={{ duration: 0.3 }}
-        className="overflow-hidden mb-6"
-      >
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 rounded-xl p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-medium">Filtros</h3>
-            <button
-              className="text-zinc-400 hover:text-white"
-              onClick={() => {
-                setActiveCategory("all")
-                setActiveDietary("all")
-              }}
-            >
-              <X className="w-4 h-4" />
-              <span className="sr-only">Limpiar filtros</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="text-sm text-zinc-400 mb-3">Categoría</h4>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  className={cn(
-                    "px-3 py-1 rounded-full text-sm transition-colors",
-                    activeCategory === "all"
-                      ? "bg-emerald-600 text-white"
-                      : "bg-zinc-800/50 text-zinc-300 hover:bg-zinc-700",
-                  )}
-                  onClick={() => setActiveCategory("all")}
-                >
-                  Todos
-                </button>
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    className={cn(
-                      "px-3 py-1 rounded-full text-sm transition-colors",
-                      activeCategory === category
-                        ? "bg-emerald-600 text-white"
-                        : "bg-zinc-800/50 text-zinc-300 hover:bg-zinc-700",
-                    )}
-                    onClick={() => setActiveCategory(category)}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-sm text-zinc-400 mb-3">Opciones dietéticas</h4>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  className={cn(
-                    "px-3 py-1 rounded-full text-sm transition-colors",
-                    activeDietary === "all"
-                      ? "bg-emerald-600 text-white"
-                      : "bg-zinc-800/50 text-zinc-300 hover:bg-zinc-700",
-                  )}
-                  onClick={() => setActiveDietary("all")}
-                >
-                  Todos
-                </button>
-                {dietaryOptions.map((option) => (
-                  <button
-                    key={option}
-                    className={cn(
-                      "px-3 py-1 rounded-full text-sm transition-colors",
-                      activeDietary === option
-                        ? "bg-emerald-600 text-white"
-                        : "bg-zinc-800/50 text-zinc-300 hover:bg-zinc-700",
-                    )}
-                    onClick={() => setActiveDietary(option)}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Active filters display */}
-      {(activeCategory !== "all" || activeDietary !== "all") && (
-        <div className="flex flex-wrap gap-2 mb-6">
-          {activeCategory !== "all" && (
-            <div className="bg-zinc-800/50 text-white px-3 py-1 rounded-full text-sm flex items-center">
-              Categoría: {activeCategory}
-              <button className="ml-2 text-zinc-400 hover:text-white" onClick={() => setActiveCategory("all")}>
-                <X className="w-3 h-3" />
-                <span className="sr-only">Eliminar filtro</span>
-              </button>
-            </div>
-          )}
-
-          {activeDietary !== "all" && (
-            <div className="bg-zinc-800/50 text-white px-3 py-1 rounded-full text-sm flex items-center">
-              Dieta: {activeDietary}
-              <button className="ml-2 text-zinc-400 hover:text-white" onClick={() => setActiveDietary("all")}>
-                <X className="w-3 h-3" />
-                <span className="sr-only">Eliminar filtro</span>
-              </button>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   )
 }

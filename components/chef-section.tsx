@@ -1,109 +1,56 @@
-"use client"
-
-import { motion } from "framer-motion"
 import Image from "next/image"
-import { Award, BookOpen, Users } from "lucide-react"
+import Reveal from "@/components/reveal"
 
+/**
+ * Chef: banda de carbón cálido texturizado (nunca negro puro) con retrato
+ * grande que rompe la banda por arriba, cita con comillas tipográficas y
+ * bio con drop cap Vollkorn. El detalle artesanal vive en la tipografía.
+ */
 export default function ChefSection() {
   return (
-    <section id="chef" className="py-32 px-4 md:px-8 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950"></div>
+    <section id="chef" className="band-char scroll-mt-24 mt-24 px-6 pb-24 text-bone md:px-10 lg:mt-32 lg:pb-32">
+      <div className="mx-auto grid max-w-[1400px] gap-x-12 gap-y-14 lg:grid-cols-12">
+        {/* Retrato que sobresale de la banda por arriba */}
+        <Reveal className="lg:col-span-5">
+          <div className="relative -mt-16 aspect-[3/4] w-full overflow-hidden lg:-mt-24">
+            <Image
+              src="https://images.unsplash.com/photo-1583394293214-28ded15ee548?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3"
+              alt="Alexandre Dubois, chef ejecutivo de Lumière, en el pase de cocina"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 42vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-char-deep/40 to-transparent" aria-hidden="true" />
+          </div>
+        </Reveal>
 
-      <motion.div className="container mx-auto max-w-7xl relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Chef Image */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden">
-              <Image
-                src="https://images.unsplash.com/photo-1583394293214-28ded15ee548?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3"
-                alt="Chef Alexandre Dubois"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-            </div>
-
-            {/* Floating achievement card */}
-            <div className="absolute -bottom-8 -right-8 bg-black/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 max-w-xs">
-              <div className="flex items-center mb-3">
-                <Award className="w-6 h-6 text-yellow-400 mr-2" />
-                <span className="text-yellow-400 font-medium">Michelin Star</span>
-              </div>
-              <p className="text-zinc-300 text-sm">Reconocido por su innovación en gastronomía molecular</p>
-            </div>
-          </motion.div>
-
-          {/* Chef Info */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="lg:pl-10"
-          >
-            <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 mb-8">
-              <span className="text-emerald-400 text-sm font-medium">CHEF EJECUTIVO</span>
-            </div>
-
-            <h2 className="font-serif text-4xl md:text-6xl font-bold mb-6">
-              <span className="text-white">Chef</span>
-              <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-600">
-                Alexandre Dubois
-              </span>
-            </h2>
-
-            <p className="text-xl text-zinc-300 mb-8 leading-relaxed">
-              Con más de 15 años de experiencia en alta cocina, Alexandre lidera nuestra propuesta de vanguardia
-              fusionando técnicas tradicionales francesas con innovaciones moleculares.
-            </p>
-
-            <div className="space-y-6 mb-8">
-              <div className="flex items-start">
-                <div className="bg-emerald-600 w-12 h-12 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                  <BookOpen className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-white mb-2">Formación</h3>
-                  <p className="text-zinc-400">Institut Paul Bocuse, Lyon • Le Cordon Bleu, París</p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="bg-teal-600 w-12 h-12 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                  <Award className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-white mb-2">Reconocimientos</h3>
-                  <p className="text-zinc-400">Estrella Michelin • James Beard Award • Chef del Año 2023</p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="bg-purple-600 w-12 h-12 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                  <Users className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-white mb-2">Filosofía</h3>
-                  <p className="text-zinc-400">"La innovación debe servir al sabor, no dominarlo"</p>
-                </div>
-              </div>
-            </div>
-
-            <blockquote className="border-l-4 border-emerald-500 pl-6 italic text-lg text-zinc-300">
-              "Cada plato es una oportunidad de contar una historia, de crear una emoción. La ciencia nos da las
-              herramientas, pero la pasión guía cada creación."
+        <div className="lg:col-span-6 lg:col-start-7 lg:pt-20">
+          <Reveal>
+            <blockquote>
+              <p className="font-serif text-[clamp(1.75rem,3.5vw,2.75rem)] font-medium leading-[1.25]">
+                «La innovación debe servir al sabor, no dominarlo. La ciencia da
+                herramientas; <em className="font-normal italic text-terracotta-light">la pasión decide el plato</em>.»
+              </p>
             </blockquote>
-          </motion.div>
+          </Reveal>
+
+          <Reveal delay={0.15}>
+            <div className="mt-10 border-t border-hairline-light pt-7">
+              <p className="font-serif text-2xl font-medium">Alexandre Dubois</p>
+              <p className="mt-2 text-xs font-medium uppercase tracking-label text-bone/60">
+                Chef ejecutivo · Institut Paul Bocuse · Le Cordon Bleu · Una estrella Michelin
+              </p>
+              <p className="mt-7 max-w-[56ch] text-base leading-[1.7] text-bone/80 first-letter:float-left first-letter:mr-3 first-letter:font-serif first-letter:text-[3.4rem] first-letter:font-semibold first-letter:leading-[0.85] first-letter:text-terracotta-light">
+                Quince años de alta cocina entre Lyon, París y Madrid. Su propuesta
+                cruza la precisión francesa con el producto de temporada español,
+                sin artificio: la temporada manda y la técnica obedece. Del pan de
+                masa madre que abre la mesa al petit four que la cierra, todo se
+                hace en casa.
+              </p>
+            </div>
+          </Reveal>
         </div>
-      </motion.div>
+      </div>
     </section>
   )
 }

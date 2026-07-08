@@ -4,35 +4,35 @@
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
-    --foreground: 0 0% 100%;
+    --background: 40 37% 92%;
+    --foreground: 24 14% 15%;
 
-    --card: 0 0% 6%;
-    --card-foreground: 0 0% 100%;
+    --card: 40 37% 92%;
+    --card-foreground: 24 14% 15%;
 
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 40 37% 92%;
+    --popover-foreground: 24 14% 15%;
 
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 4%;
+    --primary: 24 14% 15%;
+    --primary-foreground: 40 37% 92%;
 
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 40 33% 86%;
+    --secondary-foreground: 24 14% 15%;
 
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 40 33% 86%;
+    --muted-foreground: 27 15% 31%;
 
-    --accent: 0 0% 12%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 40 33% 86%;
+    --accent-foreground: 24 14% 15%;
 
-    --destructive: 0 100% 50%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 10 50% 35%;
+    --destructive-foreground: 40 37% 92%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 0 0% 100%;
+    --border: 38 20% 78%;
+    --input: 38 20% 78%;
+    --ring: 23 39% 39%;
 
-    --radius: 0.75rem;
+    --radius: 0rem;
   }
 }
 
@@ -42,88 +42,146 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    /* Grano de papel: feTurbulence inline, cero peticiones externas */
+    background-image: var(--grain-dark);
+    font-feature-settings: "rlig" 1, "calt" 1, "onum" 1;
   }
 
-  /* Performance optimizations */
-  .animate-in {
-    animation-fill-mode: both;
-  }
-  
-  .fade-in {
-    animation: fadeIn 0.5s ease-out;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
   }
 
-  /* Hardware acceleration for smooth animations */
-  .will-change-transform {
-    will-change: transform;
+  /* Foco de teclado: terracota sobre crema, crema sobre carbón */
+  :focus-visible {
+    outline: 2px solid #8a5a3c;
+    outline-offset: 4px;
   }
-  
-  .gpu-accelerated {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
+  .band-char :focus-visible {
+    outline-color: #f2ede3;
   }
 
-  /* Custom scrollbar */
+  ::selection {
+    background: #2a2420;
+    color: #f2ede3;
+  }
+  .band-char ::selection {
+    background: #f2ede3;
+    color: #2a2420;
+  }
+
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
-
   ::-webkit-scrollbar-track {
-    background: rgb(10, 10, 10);
+    background: #f2ede3;
   }
-
   ::-webkit-scrollbar-thumb {
-    background: rgb(40, 40, 40);
-    border-radius: 4px;
+    background: #cfc4ae;
   }
-
   ::-webkit-scrollbar-thumb:hover {
-    background: rgb(60, 60, 60);
+    background: #b3a68c;
   }
 }
 
+/*
+ * Textura de papel/lino. Dos granos: oscuro (para fondos crema) y claro
+ * (para bandas carbón). Se aplican como background-image sobre el
+ * background-color del propio elemento.
+ */
+:root {
+  --grain-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.16 0 0 0 0 0.14 0 0 0 0 0.12 0 0 0 0.055 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.95 0 0 0 0 0.93 0 0 0 0 0.89 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 @layer utilities {
+  /* Panel crema texturizado (el bg-color lo pone Tailwind) */
+  .texture {
+    background-image: var(--grain-dark);
+  }
+
+  /* Banda carbón cálido con grano claro */
+  .band-char {
+    background-color: #211b16;
+    background-image: var(--grain-light);
+  }
+
   .text-balance {
     text-wrap: balance;
   }
 
-  .text-shadow {
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  /* Puntos conductores de carta impresa: nombre …… precio */
+  .leaders {
+    flex: 1 1 2rem;
+    min-width: 2rem;
+    margin: 0 0.6em;
+    border-bottom: 1px dotted rgba(42, 36, 32, 0.4);
+    transform: translateY(-0.28em);
+  }
+  .band-char .leaders,
+  .on-photo .leaders {
+    border-bottom-color: rgba(242, 237, 227, 0.45);
+  }
+
+  /* Números old-style (Vollkorn los trae; esto lo fuerza en la sans) */
+  .onum {
+    font-feature-settings: "onum" 1;
   }
 }
 
-/* Optimizaciones para Leaflet */
+/*
+ * Secuencia de entrada del hero (CSS puro): el estado estático del elemento
+ * ES el estado final; los keyframes solo definen el "from" y fill-mode:both
+ * cubre el delay. Con reduced-motion la animación se anula y el contenido
+ * queda visible desde el primer frame.
+ */
+@keyframes hero-rise {
+  from {
+    transform: translateY(110%);
+  }
+}
+@keyframes hero-fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes hero-settle {
+  from {
+    transform: scale(1.06);
+  }
+}
+
+.hero-anim {
+  animation-duration: 0.9s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-anim {
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Leaflet (mapa de contacto) */
 .leaflet-container {
   font-family: inherit;
 }
 
-.leaflet-tile-pane {
-  filter: none;
-  transform: translateZ(0);
-}
-
-.leaflet-tile {
-  will-change: transform;
-  transform: translateZ(0);
-}
-
-.leaflet-zoom-anim .leaflet-zoom-animated {
-  will-change: transform;
-}
-
 .custom-popup .leaflet-popup-content-wrapper {
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 0;
+  box-shadow: none;
+  border: 1px solid rgba(42, 36, 32, 0.18);
+  background: #f2ede3;
+  color: #2a2420;
 }
 
 .custom-popup .leaflet-popup-tip {
-  background: white;
+  background: #f2ede3;
 }

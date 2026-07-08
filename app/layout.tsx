@@ -1,23 +1,26 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
 import "./globals.css"
-import { Playfair_Display, Inter } from "next/font/google"
+import { Vollkorn, Alegreya_Sans } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 
-const playfair = Playfair_Display({
+const vollkorn = Vollkorn({
   subsets: ["latin"],
-  variable: "--font-playfair",
-  display: 'swap',
+  variable: "--font-vollkorn",
+  style: ["normal", "italic"],
+  display: "swap",
   preload: true,
-  fallback: ['serif']
+  fallback: ["Georgia", "serif"],
 })
 
-const inter = Inter({
+const alegreyaSans = Alegreya_Sans({
   subsets: ["latin"],
-  variable: "--font-inter", 
-  display: 'swap',
+  variable: "--font-alegreya-sans",
+  weight: ["400", "500", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
   preload: true,
-  fallback: ['system-ui', 'sans-serif']
+  fallback: ["Seravek", "Verdana", "sans-serif"],
 })
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
@@ -97,15 +100,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={`dark ${playfair.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="es" className={`scroll-smooth ${vollkorn.variable} ${alegreyaSans.variable}`} suppressHydrationWarning>
       <head>
         {/* Estilos críticos inline básicos */}
           <style dangerouslySetInnerHTML={{
           __html: `
             /* Critical layout fallbacks */
             .min-h-screen{min-height:100vh}
-            .bg-black{background-color:rgb(0 0 0)}
-            .text-white{color:rgb(255 255 255)}
             .relative{position:relative}
             .absolute{position:absolute}
             .fixed{position:fixed}
@@ -115,40 +116,34 @@ export default function RootLayout({
             .z-50{z-index:50}
             .container{width:100%;margin-left:auto;margin-right:auto;padding-left:1rem;padding-right:1rem}
             .mx-auto{margin-left:auto;margin-right:auto}
-            .text-center{text-align:center}
-            .font-serif{font-family:var(--font-playfair)}
-            .font-sans{font-family:var(--font-inter)}
+            .font-serif{font-family:var(--font-vollkorn),Georgia,serif}
+            .font-sans{font-family:var(--font-alegreya-sans),Seravek,Verdana,sans-serif}
             .flex{display:flex}
             .hidden{display:none}
             .w-full{width:100%}
             .h-full{height:100%}
             .items-center{align-items:center}
             .justify-between{justify-content:space-between}
-            .space-x-8>:not([hidden])~:not([hidden]){margin-left:2rem}
-            @media(min-width:1024px){
-              .lg\:flex{display:flex !important}
-              .lg\:hidden{display:none !important}
+            @media(min-width:768px){
+              .md\\:flex{display:flex !important}
+              .md\\:hidden{display:none !important}
             }
-            /* Fallbacks para tema oscuro si Tailwind no está disponible */
-            html.dark, html[data-theme='dark'] {
-              background-color: #050505;
-              color: #ffffff;
-            }
-            html.dark body, html[data-theme='dark'] body {
-              background-color: #050505 !important;
-              color: #ffffff !important;
+            /* Fallback de tema crema si Tailwind no está disponible */
+            html, body {
+              background-color: #f2ede3;
+              color: #2a2420;
             }
             /* Asegurar visibilidad de bloques principales */
             header, main, footer, section, article { display: block; }
           `
         }} />
-        
+
         {/* Preconnect para recursos externos */}
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
         <link rel="dns-prefetch" href="https://unpkg.com" />
-        
+
         {/* Preload recursos críticos */}
         {/* JSON-LD: Restaurant */}
         <script
@@ -192,7 +187,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans">
-        <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false}>
+        <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" enableSystem={false}>
           {children}
         </ThemeProvider>
       </body>

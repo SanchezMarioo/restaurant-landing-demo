@@ -51,11 +51,31 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Sistema Lumière v2 — crema-carbón cálido
+        bone: {
+          DEFAULT: "#F2EDE3",
+          deep: "#E8E0D0",
+        },
+        char: {
+          DEFAULT: "#2A2420",
+          deep: "#211B16",
+        },
+        umber: "#5C4F44",
+        terracotta: {
+          DEFAULT: "#8A5A3C",
+          deep: "#6E4028",
+          light: "#C98E5F",
+        },
+        hairline: "rgba(42,36,32,0.18)",
+        "hairline-light": "rgba(242,237,227,0.22)",
+      },
+      letterSpacing: {
+        label: "0.14em",
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "0",
+        md: "0",
+        sm: "0",
       },
       keyframes: {
         "accordion-down": {
@@ -72,11 +92,8 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        serif: ["var(--font-playfair)", "Georgia", "serif"],
-      },
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        sans: ["var(--font-alegreya-sans)", "Seravek", "Verdana", "sans-serif"],
+        serif: ["var(--font-vollkorn)", "Georgia", "serif"],
       },
     },
   },

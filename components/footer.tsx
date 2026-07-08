@@ -1,112 +1,93 @@
-"use client"
-
-import type React from "react"
-
 import Link from "next/link"
-import { Instagram, Facebook, Twitter, MapPin, Phone, Mail } from "lucide-react"
-import { motion } from "framer-motion"
 
+/**
+ * Footer: banda de carbón cálido texturizado, wordmark grande en Vollkorn,
+ * columnas alineadas a la izquierda y hairlines crema. Redes como enlaces
+ * de texto, no iconos.
+ */
 export default function Footer() {
   return (
-    <footer className="bg-[#0a0a0a] text-white/70 py-16 px-4 md:px-6 border-t border-white/10">
-      <div className="container mx-auto max-w-7xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-12"
-        >
-          <div>
-            <h3 className="font-serif text-2xl font-medium text-white mb-6">LUMIÈRE</h3>
-            <p className="mb-6">
-              Un espacio donde la gastronomía se convierte en arte, creando experiencias memorables para todos nuestros
-              comensales.
+    <footer className="band-char px-6 py-20 text-bone/75 md:px-10">
+      <div className="mx-auto max-w-[1400px]">
+        <div className="grid gap-x-12 gap-y-14 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <p className="font-serif text-[clamp(2.5rem,5vw,4rem)] font-semibold leading-none tracking-[0.08em] text-bone">
+              LUMIÈRE
             </p>
-            <div className="flex space-x-4">
-              <SocialLink href="#" icon={<Instagram className="h-5 w-5" />} label="Instagram" />
-              <SocialLink href="#" icon={<Facebook className="h-5 w-5" />} label="Facebook" />
-              <SocialLink href="#" icon={<Twitter className="h-5 w-5" />} label="Twitter" />
+            <p className="mt-6 max-w-[44ch] text-base leading-[1.7]">
+              Cocina de autor y producto de temporada en el centro de Madrid.
+              Un espacio donde la gastronomía se convierte en oficio callado.
+            </p>
+            <div className="mt-8 flex gap-8">
+              <a
+                href="#"
+                className="border-b border-hairline-light pb-0.5 text-xs font-medium uppercase tracking-label text-bone/75 transition-colors duration-300 hover:border-terracotta-light hover:text-terracotta-light"
+              >
+                Instagram
+              </a>
+              <a
+                href="#"
+                className="border-b border-hairline-light pb-0.5 text-xs font-medium uppercase tracking-label text-bone/75 transition-colors duration-300 hover:border-terracotta-light hover:text-terracotta-light"
+              >
+                Facebook
+              </a>
             </div>
           </div>
 
-          <div>
-            <h3 className="font-serif text-lg font-medium text-white mb-6">Horario</h3>
-            <ul className="space-y-3">
-              <li className="flex justify-between border-b border-white/10 pb-2">
-                <span>Martes - Jueves</span>
-                <span className="text-white">13:00 - 15:30 / 20:00 - 23:00</span>
+          <div className="lg:col-span-3 lg:col-start-7">
+            <h3 className="text-xs font-medium uppercase tracking-label text-bone/50">Horario</h3>
+            <ul className="mt-6 space-y-4 text-base">
+              <li className="border-b border-hairline-light pb-4">
+                <span className="block text-bone/55">Martes — Jueves</span>
+                <span className="mt-1 block font-serif text-bone">13:00–15:30 · 20:00–23:00</span>
               </li>
-              <li className="flex justify-between border-b border-white/10 pb-2">
-                <span>Viernes - Sábado</span>
-                <span className="text-white">13:00 - 15:30 / 20:00 - 23:30</span>
+              <li className="border-b border-hairline-light pb-4">
+                <span className="block text-bone/55">Viernes — Sábado</span>
+                <span className="mt-1 block font-serif text-bone">13:00–15:30 · 20:00–23:30</span>
               </li>
-              <li className="flex justify-between border-b border-white/10 pb-2">
-                <span>Domingo - Lunes</span>
-                <span className="text-white">Cerrado</span>
+              <li>
+                <span className="block text-bone/55">Domingo — Lunes</span>
+                <span className="mt-1 block font-serif text-bone">Cerrado</span>
               </li>
             </ul>
           </div>
 
-          <div>
-            <h3 className="font-serif text-lg font-medium text-white mb-6">Contacto</h3>
-            <address className="not-italic space-y-3">
-              <p className="flex items-center gap-3">
-                <MapPin className="h-5 w-5 text-white/50" />
-                <span>Calle Gourmet 123, Madrid, 28001</span>
+          <div className="lg:col-span-3 lg:col-start-10">
+            <h3 className="text-xs font-medium uppercase tracking-label text-bone/50">Contacto</h3>
+            <address className="mt-6 space-y-4 text-base not-italic">
+              <p>Calle Gourmet 123, 28001 Madrid</p>
+              <p>
+                <a href="tel:+34912345678" className="font-serif text-bone transition-colors duration-300 hover:text-terracotta-light">
+                  +34 912 345 678
+                </a>
               </p>
-              <p className="flex items-center gap-3">
-                <Phone className="h-5 w-5 text-white/50" />
-                <span className="text-white">+34 912 345 678</span>
-              </p>
-              <p className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-white/50" />
-                <span className="text-white">reservas@lumiererestaurant.com</span>
+              <p>
+                <a
+                  href="mailto:reservas@lumiererestaurant.com"
+                  className="break-all text-bone transition-colors duration-300 hover:text-terracotta-light"
+                >
+                  reservas@lumiererestaurant.com
+                </a>
               </p>
             </address>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="border-t border-white/10 mt-12 pt-8 text-center text-white/50"
-        >
+        <div className="mt-16 flex flex-col gap-6 border-t border-hairline-light pt-8 text-sm text-bone/50 sm:flex-row sm:items-baseline sm:justify-between">
           <p>© {new Date().getFullYear()} Lumière Restaurant. Todos los derechos reservados.</p>
-          <div className="flex justify-center space-x-6 mt-4 text-xs">
-            <Link href="#" className="hover:text-white transition-colors">
-              Política de Privacidad
+          <div className="flex flex-wrap gap-x-8 gap-y-2">
+            <Link href="#" className="transition-colors duration-300 hover:text-bone">
+              Privacidad
             </Link>
-            <Link href="#" className="hover:text-white transition-colors">
-              Términos de Servicio
+            <Link href="#" className="transition-colors duration-300 hover:text-bone">
+              Términos
             </Link>
-            <Link href="#" className="hover:text-white transition-colors">
-              Política de Cookies
+            <Link href="#" className="transition-colors duration-300 hover:text-bone">
+              Cookies
             </Link>
           </div>
-        </motion.div>
+        </div>
       </div>
     </footer>
-  )
-}
-
-interface SocialLinkProps {
-  href: string
-  icon: React.ReactNode
-  label: string
-}
-
-function SocialLink({ href, icon, label }: SocialLinkProps) {
-  return (
-    <Link
-      href={href}
-      className="bg-white/5 hover:bg-white/10 p-2 rounded-full transition-colors duration-300"
-      aria-label={label}
-    >
-      {icon}
-      <span className="sr-only">{label}</span>
-    </Link>
   )
 }
