@@ -2,6 +2,7 @@ import dynamic from "next/dynamic"
 import type { Metadata } from "next"
 import Navbar from "@/components/navbar"
 import CriticalHero from "@/components/critical-hero"
+import { absoluteUrl } from "@/lib/site-url"
 
 // Secciones bajo el pliegue: carga diferida con fallbacks neutros
 // que reservan altura sin ornamento.
@@ -53,7 +54,7 @@ export default function Home() {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Inicio', item: '/' },
+              { '@type': 'ListItem', position: 1, name: 'Inicio', item: absoluteUrl('/') },
             ],
           }),
         }}

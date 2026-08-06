@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import { Vollkorn, Alegreya_Sans } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
+import { absoluteUrl, siteUrl } from "@/lib/site-url"
 
 const vollkorn = Vollkorn({
   subsets: ["latin"],
@@ -22,8 +23,6 @@ const alegreyaSans = Alegreya_Sans({
   preload: true,
   fallback: ["Seravek", "Verdana", "sans-serif"],
 })
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -59,7 +58,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    url: new URL("/", siteUrl),
+    url: absoluteUrl("/"),
     title: "Lumière · Restaurante gastronómico en Madrid",
     description:
       "Cocina contemporánea con raíces mediterráneas en el corazón de Madrid.",
@@ -153,8 +152,8 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'Restaurant',
               name: 'Lumière',
-              url: siteUrl,
-              image: new URL('/placeholder.jpg', siteUrl).toString(),
+              url: absoluteUrl("/"),
+              image: absoluteUrl('/placeholder.jpg'),
               servesCuisine: ['Mediterránea', 'Contemporánea'],
               priceRange: '€€€',
               address: {
@@ -176,10 +175,10 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               name: 'Lumière',
-              url: siteUrl,
+              url: absoluteUrl("/"),
               potentialAction: {
                 '@type': 'SearchAction',
-                target: `${siteUrl}/?q={search_term_string}`,
+                target: `${absoluteUrl("/")}?q={search_term_string}`,
                 'query-input': 'required name=search_term_string'
               }
             })
